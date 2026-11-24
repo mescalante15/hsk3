@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HSK 3 · Mary</title>
+<meta name="description" content="Mary's daily HSK 3 study app">
+<meta name="theme-color" content="#1E7560">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HSK 3">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<!-- fonts load without blocking, so the app still opens fast if Google Fonts is slow or blocked -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+/* Layout: one narrow phone column; sticky top bar with countdown, tab bar fixed at the bottom like a study app. */
+:root{
+  --bg:#F2F4EF; --surface:#FFFFFF; --sunk:#E6EAE2; --fg:#1B2420; --muted:#5E6B64; --line:#D3DAD0;
+  --jade:#1E7560; --jade-soft:#D6EDE4; --ochre:#B07A16; --ochre-soft:#F5E8CC; --red:#B4412E; --red-soft:#F6DDD6;
+  --f-display:"Sora",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --f-han:"Noto Serif SC","Songti SC","PingFang SC","Microsoft YaHei",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111614; --surface:#19201D; --sunk:#222B27; --fg:#E5ECE7; --muted:#97A59D; --line:#2E3934;
+  --jade:#5CC2A2; --jade-soft:#1D3A31; --ochre:#E0AE4F; --ochre-soft:#3A2F17; --red:#EE8A76; --red-soft:#3E2420; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111614; --surface:#19201D; --sunk:#222B27; --fg:#E5ECE7; --muted:#97A59D; --line:#2E3934;
+  --jade:#5CC2A2; --jade-soft:#1D3A31; --ochre:#E0AE4F; --ochre-soft:#3A2F17; --red:#EE8A76; --red-soft:#3E2420; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 calc(84px + env(safe-area-inset-bottom,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:560px;margin:0 auto}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line)}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand b{font-family:var(--f-display);font-size:17px;letter-spacing:-.01em}
+.brand span{font-size:12px;color:var(--muted)}
+.count{font-family:var(--f-display);text-align:right;line-height:1.1}
+.count strong{font-size:22px;color:var(--jade);font-variant-numeric:tabular-nums}
+.count small{display:block;font-family:var(--f-body);font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+main{padding-block:18px}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:-.01em;text-wrap:balance;margin:0}
+h1{font-size:24px}
+h2{font-size:18px}
+h3{font-size:15px}
+.han{font-family:var(--f-han)}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.banner{background:var(--ochre-soft);color:var(--fg);border-radius:10px;padding:10px 12px;font-size:13px}
+.banner[data-tone="bad"]{background:var(--red-soft)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+button,.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:10px 14px;cursor:pointer;min-height:44px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+button.primary{background:var(--jade);border-color:var(--jade);color:var(--bg)}
+button.good{background:var(--jade-soft);border-color:transparent;color:var(--fg)}
+button.bad{background:var(--red-soft);border-color:transparent;color:var(--fg)}
+button.ghost{background:transparent}
+button:disabled{opacity:.45;cursor:default}
+.grow{flex:1 1 0;min-width:0}
+
+/* Today */
+.hero-today{display:flex;align-items:center;gap:16px}
+.ring{position:relative;width:104px;height:104px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:11}
+.ring-bg{stroke:var(--sunk)}
+.ring-fg{stroke:var(--jade);stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:326.7;transition:stroke-dashoffset .5s}
+.ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.ring-txt b{font-family:var(--f-display);font-size:22px;font-variant-numeric:tabular-nums}
+.ring-txt span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.hello{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hello .han{font-size:26px;font-weight:700;line-height:1.2}
+.streak{align-self:flex-start;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--ochre-soft);color:var(--ochre)}
+button.big{width:100%;min-height:56px;font-size:17px;border-radius:14px;font-family:var(--f-display);box-shadow:0 3px 0 color-mix(in srgb,var(--jade) 60%,#000)}
+button.big:active{transform:translateY(2px);box-shadow:0 1px 0 color-mix(in srgb,var(--jade) 60%,#000)}
+textarea{font:12px/1.4 ui-monospace,Menlo,monospace;width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--sunk);color:var(--fg);resize:vertical}
+.task .tick.btn-tick{cursor:pointer;background:transparent;padding:0;min-height:0}
+.tasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.task{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.task .tick{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;font-weight:700;color:var(--bg)}
+.task[data-done="1"] .tick{background:var(--jade);border-color:var(--jade)}
+.task[data-done="1"] .t-title{color:var(--muted)}
+.t-title{font-weight:600}
+.t-sub{font-size:12.5px;color:var(--muted)}
+.task button{min-height:38px;padding:6px 12px;font-size:14px}
+.split{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-family:var(--f-display);font-size:22px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.exam-map{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.exam-map div{border-radius:10px;padding:10px;background:var(--sunk);font-size:12.5px}
+.exam-map b{display:block;font-family:var(--f-display);font-size:14px}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 18px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+.card .big{font-family:var(--f-han);font-size:56px;font-weight:700;line-height:1.15;word-break:keep-all}
+.card .en{font-size:20px;font-weight:600}
+.card .py{font-size:20px;color:var(--jade);font-weight:500}
+.card .prompt{font-size:13px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.chip.new{background:var(--ochre-soft);color:var(--ochre)}
+.ladder{display:flex;gap:4px}
+.ladder i{width:18px;height:6px;border-radius:3px;background:var(--line)}
+.ladder i.on{background:var(--jade)}
+.answer-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.progressbar{height:6px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.progressbar i{display:block;height:100%;background:var(--jade);width:0;transition:width .3s}
+.speak{min-height:36px;padding:6px 12px;font-size:13px}
+
+/* Practice */
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--sunk);border-radius:12px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;min-height:38px}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.passage{font-family:var(--f-han);font-size:19px;line-height:1.9}
+.passage-py{font-size:14px;color:var(--jade);line-height:1.6}
+.q{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+.q .qz{font-family:var(--f-han);font-size:17px;font-weight:700}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts button{text-align:left;font-weight:500;display:flex;gap:10px}
+.opts button .han{font-size:17px}
+.opts button[data-state="right"]{background:var(--jade-soft);border-color:var(--jade)}
+.opts button[data-state="wrong"]{background:var(--red-soft);border-color:var(--red)}
+.slot{min-height:64px;border:2px dashed var(--line);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tiles{display:flex;flex-wrap:wrap;gap:8px}
+.tile{font-family:var(--f-han);font-size:19px;font-weight:700;padding:8px 14px;min-height:46px;background:var(--surface)}
+.tile.used{visibility:hidden}
+.slot .tile{background:var(--jade-soft);border-color:transparent}
+.result{border-radius:12px;padding:12px;font-size:14px}
+.result[data-ok="1"]{background:var(--jade-soft)}
+.result[data-ok="0"]{background:var(--red-soft)}
+.result .han{font-size:18px;font-weight:700}
+
+/* Progress */
+.boxes{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:150px}
+.boxes .col{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.boxes .bar{width:100%;border-radius:6px 6px 2px 2px;background:var(--jade);min-height:3px}
+.boxes .bar.new{background:var(--ochre)}
+.boxes .bar.known{background:var(--fg)}
+.boxes .n{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.boxes .l{font-size:10.5px;color:var(--muted)}
+.days{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}
+.days i{aspect-ratio:1;border-radius:4px;background:var(--sunk);max-width:100%}
+.days i[data-l="1"]{background:var(--jade-soft)}
+.days i[data-l="2"]{background:var(--jade)}
+label.field{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
+input,select{font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);min-height:44px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fields label:first-child{grid-column:1/-1}
+
+/* Tab bar */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;text-decoration:none;color:var(--muted);font-size:11.5px;font-weight:600}
+nav.tabs a .han{font-size:19px;font-weight:700;line-height:1.2}
+nav.tabs a[aria-current="page"]{color:var(--jade)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><b>HSK 3 · 学习</b><span id="dateLine">Today</span></div>
+    <div class="count"><strong id="daysLeft">–</strong><small>days to exam</small></div>
+  </header>
+
+  <main>
+    <div id="status" class="banner" hidden></div>
+
+    <!-- TODAY -->
+    <section id="v-today" class="stack" data-view>
+      <div class="hero-today">
+        <div class="ring" aria-hidden="true">
+          <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"></circle><circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"></circle></svg>
+          <div class="ring-txt"><b id="ringNum">0/5</b><span>today</span></div>
+        </div>
+        <div class="hello">
+          <span class="han" id="greet">你好，Mary！</span>
+          <span class="muted" id="greetEn">Here is today's plan. About 30 minutes.</span>
+          <span class="streak" id="streakPill">连续 0 天 · 0-day streak</span>
+        </div>
+      </div>
+      <button class="primary big" type="button" id="continueBtn">Start today's lesson</button>
+      <ul class="tasks" id="taskList"></ul>
+      <div class="split">
+        <div class="stat"><b id="sKnown">0</b><span>words known</span></div>
+        <div class="stat"><b id="sReview">0</b><span>in review</span></div>
+        <div class="stat"><b id="sStreak">0</b><span>day streak</span></div>
+      </div>
+      <div class="panel stack">
+        <div class="eyebrow">The exam · HSK 3</div>
+        <div class="exam-map">
+          <div><b>听力 Listening</b>40 questions · 35 min</div>
+          <div><b>阅读 Reading</b>30 questions · 30 min</div>
+          <div><b>书写 Writing</b>10 questions · 15 min</div>
+        </div>
+        <p class="note" style="margin:0">Pass mark 180 / 300 on the current HSK 3. On the computer test you type the writing answers with pinyin. The format is moving to HSK 3.0, so check chinesetest.cn before you book.</p>
+      </div>
+    </section>
+
+    <!-- CARDS -->
+    <section id="v-cards" class="stack" data-view hidden>
+      <div class="row" style="justify-content:space-between">
+        <h1>Words <span class="han">词语</span></h1>
+        <span class="note" id="queueInfo"></span>
+      </div>
+      <div class="progressbar"><i id="qBar"></i></div>
+      <div id="cardArea"></div>
+    </section>
+
+    <!-- PRACTICE -->
+    <section id="v-practice" class="stack" data-view hidden>
+      <h1>Exam practice <span class="han">练习</span></h1>
+      <div class="seg" role="group" aria-label="Practice type">
+        <button id="segRead" aria-pressed="true">阅读 Reading</button>
+        <button id="segOrder" aria-pressed="false">排序 Word order</button>
+      </div>
+      <div id="readArea" class="stack"></div>
+      <div id="orderArea" class="stack" hidden></div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="v-progress" class="stack" data-view hidden>
+      <h1>Progress <span class="han">进步</span></h1>
+      <div class="panel stack">
+        <div class="eyebrow">Words by Leitner box</div>
+        <div class="boxes" id="boxChart"></div>
+        <p class="note" style="margin:0">New → box 1 (1 day) → 2 (2 days) → 3 (4 days) → 4 (8 days) → 5 (16 days) → known. A miss sends a word back to box 1.</p>
+      </div>
+      <div class="panel stack">
+        <div class="eyebrow">Last 14 days</div>
+        <div class="days" id="dayDots"></div>
+        <p class="note" style="margin:0" id="daySummary"></p>
+      </div>
+      <form class="panel stack" id="settingsForm">
+        <div class="eyebrow">Settings</div>
+        <div class="fields">
+          <label class="field" for="examDate">Exam date (target)<input type="date" id="examDate"></label>
+          <label class="field" for="dailyNew">New words a day<select id="dailyNew"><option>5</option><option>8</option><option>10</option><option>12</option><option>15</option></select></label>
+          <label class="field" for="reviewCap">Max reviews a day<select id="reviewCap"><option>15</option><option>20</option><option>30</option><option>40</option><option>60</option></select></label>
+        </div>
+        <div class="row"><button class="primary" type="submit">Save settings</button><span class="note" id="saveNote"></span></div>
+      </form>
+      <div class="panel stack">
+        <div class="eyebrow">Send to Laoshi</div>
+        <p class="note" style="margin:0">Your progress is saved on this phone. Before a chat lesson, copy this code and paste it in your Laoshi chat. Laoshi picks up where you are, and it's your backup too.</p>
+        <div class="row"><button class="primary" type="button" id="exportBtn">Copy for Laoshi</button><span class="note" id="exportNote"></span></div>
+        <textarea id="exportBox" rows="4" readonly hidden aria-label="Progress code"></textarea>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="in">
+    <a href="#today" data-tab="today"><span class="han">今天</span>Today</a>
+    <a href="#cards" data-tab="cards"><span class="han">词语</span>Words</a>
+    <a href="#practice" data-tab="practice"><span class="han">练习</span>Practice</a>
+    <a href="#progress" data-tab="progress"><span class="han">进步</span>Progress</a>
+  </div>
+</nav>
+
+<script>
+(() => {
+"use strict";
+const TZ = "Asia/Shanghai";
+const INTERVAL = {1:1, 2:2, 3:4, 4:8, 5:16};
+const DEFAULTS = {examDate:"2027-02-27", dailyNew:8, reviewCap:20};
+const $ = s => document.querySelector(s);
+const el = (tag, attrs={}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v;
+    else if (k === "text") n.textContent = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) n.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) n.append(k);
+  return n;
+};
+const today = () => new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const addDays = (d,n) => { const t = new Date(d+"T00:00:00Z"); t.setUTCDate(t.getUTCDate()+n); return t.toISOString().slice(0,10); };
+const diffDays = (a,b) => Math.round((new Date(b+"T00:00:00Z") - new Date(a+"T00:00:00Z"))/864e5);
+const strip = s => String(s).replace(/[\s。，、！？,.!?：:“”"']/g,"");
+
+/* ---------- state: words ship inside the page, progress is saved on this phone ---------- */
+const WORDS = [{"id":"w001","hz":"你好","py":"nǐ hǎo","en":"hello","hsk":1,"box":3,"due":"2026-11-24","order":1},{"id":"w002","hz":"谢谢","py":"xièxie","en":"thank you","hsk":1,"box":3,"due":"2026-11-24","order":2},{"id":"w003","hz":"多少钱","py":"duōshao qián","en":"how much (money)?","hsk":1,"box":3,"due":"2026-11-24","order":3},{"id":"w004","hz":"委内瑞拉人","py":"Wěinèiruìlā rén","en":"Venezuelan (person)","hsk":null,"box":3,"due":"2026-11-24","order":4},{"id":"w005","hz":"工作","py":"gōngzuò","en":"work / job","hsk":1,"box":3,"due":"2026-11-24","order":5},{"id":"w006","hz":"明天","py":"míngtiān","en":"tomorrow","hsk":1,"box":1,"due":"2026-11-24","order":6},{"id":"w007","hz":"我们","py":"wǒmen","en":"we","hsk":1,"box":3,"due":"2026-11-24","order":7},{"id":"w008","hz":"他 / 她","py":"tā","en":"he / she","hsk":1,"box":3,"due":"2026-11-24","order":8},{"id":"w009","hz":"什么","py":"shénme","en":"what","hsk":1,"box":3,"due":"2026-11-24","order":9},{"id":"w010","hz":"哪儿","py":"nǎr","en":"where","hsk":1,"box":3,"due":"2026-11-24","order":10},{"id":"w011","hz":"谁","py":"shéi","en":"who","hsk":1,"box":3,"due":"2026-11-24","order":11},{"id":"w012","hz":"喜欢","py":"xǐhuan","en":"to like","hsk":1,"box":3,"due":"2026-11-24","order":12},{"id":"w013","hz":"吃","py":"chī","en":"to eat","hsk":1,"box":3,"due":"2026-11-24","order":13},{"id":"w014","hz":"喝","py":"hē","en":"to drink","hsk":1,"box":3,"due":"2026-11-24","order":14},{"id":"w015","hz":"去","py":"qù","en":"to go","hsk":1,"box":3,"due":"2026-11-24","order":15},{"id":"w016","hz":"来","py":"lái","en":"to come","hsk":1,"box":3,"due":"2026-11-24","order":16},{"id":"w017","hz":"看","py":"kàn","en":"to look, watch","hsk":1,"box":3,"due":"2026-11-24","order":17},{"id":"w018","hz":"说","py":"shuō","en":"to speak, say","hsk":1,"box":3,"due":"2026-11-24","order":18},{"id":"w019","hz":"想","py":"xiǎng","en":"to want, think","hsk":1,"box":3,"due":"2026-11-24","order":19},{"id":"w020","hz":"会","py":"huì","en":"can (know how)","hsk":1,"box":3,"due":"2026-11-24","order":20},{"id":"w021","hz":"有","py":"yǒu","en":"to have","hsk":1,"box":3,"due":"2026-11-24","order":21},{"id":"w022","hz":"没有","py":"méiyǒu","en":"don't have","hsk":1,"box":3,"due":"2026-11-24","order":22},{"id":"w023","hz":"今天","py":"jīntiān","en":"today","hsk":1,"box":3,"due":"2026-11-24","order":23},{"id":"w024","hz":"现在","py":"xiànzài","en":"now","hsk":1,"box":3,"due":"2026-11-24","order":24},{"id":"w025","hz":"朋友","py":"péngyou","en":"friend","hsk":1,"box":3,"due":"2026-11-24","order":25},{"id":"w026","hz":"不客气","py":"bú kèqi","en":"you're welcome","hsk":1,"box":3,"due":"2026-11-24","order":26},{"id":"w027","hz":"觉得","py":"juéde","en":"to feel, think","hsk":2,"box":3,"due":"2026-11-24","order":27},{"id":"w028","hz":"可以","py":"kěyǐ","en":"can, may","hsk":2,"box":3,"due":"2026-11-24","order":28},{"id":"w029","hz":"因为","py":"yīnwèi","en":"because","hsk":2,"box":3,"due":"2026-11-24","order":29},{"id":"w030","hz":"但是","py":"dànshì","en":"but","hsk":2,"box":3,"due":"2026-11-24","order":30},{"id":"w031","hz":"知道","py":"zhīdào","en":"to know","hsk":2,"box":3,"due":"2026-11-24","order":31},{"id":"w032","hz":"开始","py":"kāishǐ","en":"to start","hsk":2,"box":3,"due":"2026-11-24","order":32},{"id":"w033","hz":"休息","py":"xiūxi","en":"to rest","hsk":2,"box":3,"due":"2026-11-24","order":33},{"id":"w034","hz":"一起","py":"yìqǐ","en":"together","hsk":2,"box":3,"due":"2026-11-24","order":34},{"id":"w035","hz":"每天","py":"měitiān","en":"every day","hsk":2,"box":3,"due":"2026-11-24","order":35},{"id":"w036","hz":"时间","py":"shíjiān","en":"time","hsk":2,"box":3,"due":"2026-11-24","order":36},{"id":"w037","hz":"问题","py":"wèntí","en":"question, problem","hsk":2,"box":3,"due":"2026-11-24","order":37},{"id":"w038","hz":"已经","py":"yǐjīng","en":"already","hsk":2,"box":1,"due":"2026-11-24","order":38},{"id":"w039","hz":"还","py":"hái","en":"still, also","hsk":2,"box":1,"due":"2026-11-24","order":39},{"id":"w040","hz":"所以","py":"suǒyǐ","en":"so, therefore","hsk":2,"box":1,"due":"2026-11-24","order":40},{"id":"w041","hz":"准备","py":"zhǔnbèi","en":"to prepare","hsk":2,"box":1,"due":"2026-11-24","order":41},{"id":"w042","hz":"慢","py":"màn","en":"slow","hsk":2,"box":1,"due":"2026-11-24","order":42},{"id":"w043","hz":"快","py":"kuài","en":"fast","hsk":2,"box":1,"due":"2026-11-24","order":43},{"id":"w044","hz":"贵","py":"guì","en":"expensive","hsk":2,"box":1,"due":"2026-11-24","order":44},{"id":"w045","hz":"便宜","py":"piányi","en":"cheap","hsk":2,"box":1,"due":"2026-11-24","order":45},{"id":"w046","hz":"帮助","py":"bāngzhù","en":"to help","hsk":2,"box":1,"due":"2026-11-24","order":46},{"id":"w047","hz":"一 – 十","py":"yī – shí","en":"numbers 1–10","hsk":1,"box":2,"due":"2026-11-24","order":47},{"id":"w048","hz":"岁","py":"suì","en":"years old","hsk":1,"box":2,"due":"2026-11-24","order":48},{"id":"w049","hz":"块","py":"kuài","en":"yuan (spoken)","hsk":1,"box":2,"due":"2026-11-24","order":49},{"id":"w050","hz":"这个","py":"zhège","en":"this (one)","hsk":1,"box":2,"due":"2026-11-24","order":50},{"id":"w051","hz":"我要","py":"wǒ yào","en":"I want","hsk":1,"box":2,"due":"2026-11-24","order":51},{"id":"w052","hz":"两个","py":"liǎng ge","en":"two (things)","hsk":1,"box":2,"due":"2026-11-24","order":52},{"id":"w053","hz":"帮忙","py":"bāng máng","en":"to help (out)","hsk":3,"box":0,"due":null,"order":53},{"id":"w054","hz":"比","py":"bǐ","en":"than (compare)","hsk":2,"box":0,"due":null,"order":54},{"id":"w055","hz":"别","py":"bié","en":"don't","hsk":2,"box":0,"due":null,"order":55},{"id":"w056","hz":"次","py":"cì","en":"time(s), occurrence","hsk":2,"box":0,"due":null,"order":56},{"id":"w057","hz":"从","py":"cóng","en":"from","hsk":2,"box":0,"due":null,"order":57},{"id":"w058","hz":"错","py":"cuò","en":"wrong","hsk":2,"box":0,"due":null,"order":58},{"id":"w059","hz":"大家","py":"dàjiā","en":"everyone","hsk":2,"box":0,"due":null,"order":59},{"id":"w060","hz":"等","py":"děng","en":"to wait","hsk":2,"box":0,"due":null,"order":60},{"id":"w061","hz":"懂","py":"dǒng","en":"to understand","hsk":2,"box":0,"due":null,"order":61},{"id":"w062","hz":"对","py":"duì","en":"correct; towards","hsk":2,"box":0,"due":null,"order":62},{"id":"w063","hz":"非常","py":"fēicháng","en":"very, extremely","hsk":2,"box":0,"due":null,"order":63},{"id":"w064","hz":"告诉","py":"gàosu","en":"to tell","hsk":2,"box":0,"due":null,"order":64},{"id":"w065","hz":"给","py":"gěi","en":"to give; for","hsk":2,"box":0,"due":null,"order":65},{"id":"w066","hz":"公司","py":"gōngsī","en":"company","hsk":2,"box":0,"due":null,"order":66},{"id":"w067","hz":"过","py":"guo","en":"(have done before)","hsk":2,"box":0,"due":null,"order":67},{"id":"w068","hz":"孩子","py":"háizi","en":"child","hsk":2,"box":0,"due":null,"order":68},{"id":"w069","hz":"机场","py":"jīchǎng","en":"airport","hsk":2,"box":0,"due":null,"order":69},{"id":"w070","hz":"介绍","py":"jièshào","en":"to introduce","hsk":2,"box":0,"due":null,"order":70},{"id":"w071","hz":"近","py":"jìn","en":"near","hsk":2,"box":0,"due":null,"order":71},{"id":"w072","hz":"远","py":"yuǎn","en":"far","hsk":2,"box":0,"due":null,"order":72},{"id":"w073","hz":"就","py":"jiù","en":"then, right away","hsk":2,"box":0,"due":null,"order":73},{"id":"w074","hz":"考试","py":"kǎoshì","en":"exam","hsk":2,"box":0,"due":null,"order":74},{"id":"w075","hz":"可能","py":"kěnéng","en":"maybe, possible","hsk":2,"box":0,"due":null,"order":75},{"id":"w076","hz":"累","py":"lèi","en":"tired","hsk":2,"box":0,"due":null,"order":76},{"id":"w077","hz":"离","py":"lí","en":"from (distance)","hsk":2,"box":0,"due":null,"order":77},{"id":"w078","hz":"忙","py":"máng","en":"busy","hsk":2,"box":0,"due":null,"order":78},{"id":"w079","hz":"旁边","py":"pángbiān","en":"beside","hsk":2,"box":0,"due":null,"order":79},{"id":"w080","hz":"起床","py":"qǐchuáng","en":"to get up","hsk":2,"box":0,"due":null,"order":80},{"id":"w081","hz":"让","py":"ràng","en":"to let, make","hsk":2,"box":0,"due":null,"order":81},{"id":"w082","hz":"上班","py":"shàngbān","en":"to go to work","hsk":2,"box":0,"due":null,"order":82},{"id":"w083","hz":"身体","py":"shēntǐ","en":"body, health","hsk":2,"box":0,"due":null,"order":83},{"id":"w084","hz":"生病","py":"shēngbìng","en":"to get sick","hsk":2,"box":0,"due":null,"order":84},{"id":"w085","hz":"事情","py":"shìqing","en":"matter, thing","hsk":2,"box":0,"due":null,"order":85},{"id":"w086","hz":"送","py":"sòng","en":"to give; deliver","hsk":2,"box":0,"due":null,"order":86},{"id":"w087","hz":"虽然","py":"suīrán","en":"although","hsk":2,"box":0,"due":null,"order":87},{"id":"w088","hz":"完","py":"wán","en":"to finish","hsk":2,"box":0,"due":null,"order":88},{"id":"w089","hz":"为什么","py":"wèishénme","en":"why","hsk":2,"box":0,"due":null,"order":89},{"id":"w090","hz":"问","py":"wèn","en":"to ask","hsk":2,"box":0,"due":null,"order":90},{"id":"w091","hz":"希望","py":"xīwàng","en":"to hope","hsk":2,"box":0,"due":null,"order":91},{"id":"w092","hz":"小时","py":"xiǎoshí","en":"hour","hsk":2,"box":0,"due":null,"order":92},{"id":"w093","hz":"新","py":"xīn","en":"new","hsk":2,"box":0,"due":null,"order":93},{"id":"w094","hz":"意思","py":"yìsi","en":"meaning","hsk":2,"box":0,"due":null,"order":94},{"id":"w095","hz":"再","py":"zài","en":"again","hsk":2,"box":0,"due":null,"order":95},{"id":"w096","hz":"找","py":"zhǎo","en":"to look for","hsk":2,"box":0,"due":null,"order":96},{"id":"w097","hz":"真","py":"zhēn","en":"really, truly","hsk":2,"box":0,"due":null,"order":97},{"id":"w098","hz":"正在","py":"zhèngzài","en":"in the middle of","hsk":2,"box":0,"due":null,"order":98},{"id":"w099","hz":"最","py":"zuì","en":"most","hsk":2,"box":0,"due":null,"order":99},{"id":"w100","hz":"走","py":"zǒu","en":"to walk; leave","hsk":2,"box":0,"due":null,"order":100},{"id":"w101","hz":"办法","py":"bànfǎ","en":"way, method","hsk":3,"box":0,"due":null,"order":101},{"id":"w102","hz":"比较","py":"bǐjiào","en":"fairly, rather","hsk":3,"box":0,"due":null,"order":102},{"id":"w103","hz":"必须","py":"bìxū","en":"must","hsk":3,"box":0,"due":null,"order":103},{"id":"w104","hz":"别人","py":"biérén","en":"other people","hsk":3,"box":0,"due":null,"order":104},{"id":"w105","hz":"参加","py":"cānjiā","en":"to take part","hsk":3,"box":0,"due":null,"order":105},{"id":"w106","hz":"超市","py":"chāoshì","en":"supermarket","hsk":3,"box":0,"due":null,"order":106},{"id":"w107","hz":"城市","py":"chéngshì","en":"city","hsk":3,"box":0,"due":null,"order":107},{"id":"w108","hz":"迟到","py":"chídào","en":"to be late","hsk":3,"box":0,"due":null,"order":108},{"id":"w109","hz":"除了","py":"chúle","en":"apart from, besides","hsk":3,"box":0,"due":null,"order":109},{"id":"w110","hz":"打扫","py":"dǎsǎo","en":"to clean","hsk":3,"box":0,"due":null,"order":110},{"id":"w111","hz":"打算","py":"dǎsuàn","en":"to plan to","hsk":3,"box":0,"due":null,"order":111},{"id":"w112","hz":"带","py":"dài","en":"to bring, take","hsk":3,"box":0,"due":null,"order":112},{"id":"w113","hz":"担心","py":"dānxīn","en":"to worry","hsk":3,"box":0,"due":null,"order":113},{"id":"w114","hz":"地铁","py":"dìtiě","en":"metro","hsk":3,"box":0,"due":null,"order":114},{"id":"w115","hz":"电梯","py":"diàntī","en":"lift, elevator","hsk":3,"box":0,"due":null,"order":115},{"id":"w116","hz":"东西","py":"dōngxi","en":"thing, stuff","hsk":3,"box":0,"due":null,"order":116},{"id":"w117","hz":"锻炼","py":"duànliàn","en":"to exercise","hsk":3,"box":0,"due":null,"order":117},{"id":"w118","hz":"发现","py":"fāxiàn","en":"to discover","hsk":3,"box":0,"due":null,"order":118},{"id":"w119","hz":"方便","py":"fāngbiàn","en":"convenient","hsk":3,"box":0,"due":null,"order":119},{"id":"w120","hz":"放心","py":"fàngxīn","en":"don't worry, rest easy","hsk":3,"box":0,"due":null,"order":120},{"id":"w121","hz":"附近","py":"fùjìn","en":"nearby","hsk":3,"box":0,"due":null,"order":121},{"id":"w122","hz":"复习","py":"fùxí","en":"to review","hsk":3,"box":0,"due":null,"order":122},{"id":"w123","hz":"感冒","py":"gǎnmào","en":"a cold; catch a cold","hsk":3,"box":0,"due":null,"order":123},{"id":"w124","hz":"刚才","py":"gāngcái","en":"just now","hsk":3,"box":0,"due":null,"order":124},{"id":"w125","hz":"跟","py":"gēn","en":"with","hsk":3,"box":0,"due":null,"order":125},{"id":"w126","hz":"更","py":"gèng","en":"even more","hsk":3,"box":0,"due":null,"order":126},{"id":"w127","hz":"关系","py":"guānxi","en":"relationship; connections","hsk":3,"box":0,"due":null,"order":127},{"id":"w128","hz":"过去","py":"guòqù","en":"the past","hsk":3,"box":0,"due":null,"order":128},{"id":"w129","hz":"害怕","py":"hàipà","en":"to be afraid","hsk":3,"box":0,"due":null,"order":129},{"id":"w130","hz":"护照","py":"hùzhào","en":"passport","hsk":3,"box":0,"due":null,"order":130},{"id":"w131","hz":"花","py":"huā","en":"to spend","hsk":3,"box":0,"due":null,"order":131},{"id":"w132","hz":"换","py":"huàn","en":"to change, swap","hsk":3,"box":0,"due":null,"order":132},{"id":"w133","hz":"回答","py":"huídá","en":"to answer","hsk":3,"box":0,"due":null,"order":133},{"id":"w134","hz":"会议","py":"huìyì","en":"meeting","hsk":3,"box":0,"due":null,"order":134},{"id":"w135","hz":"或者","py":"huòzhě","en":"or","hsk":3,"box":0,"due":null,"order":135},{"id":"w136","hz":"机会","py":"jīhuì","en":"chance","hsk":3,"box":0,"due":null,"order":136},{"id":"w137","hz":"记得","py":"jìde","en":"to remember","hsk":3,"box":0,"due":null,"order":137},{"id":"w138","hz":"检查","py":"jiǎnchá","en":"to check","hsk":3,"box":0,"due":null,"order":138},{"id":"w139","hz":"简单","py":"jiǎndān","en":"simple","hsk":3,"box":0,"due":null,"order":139},{"id":"w140","hz":"健康","py":"jiànkāng","en":"healthy","hsk":3,"box":0,"due":null,"order":140},{"id":"w141","hz":"见面","py":"jiànmiàn","en":"to meet up","hsk":3,"box":0,"due":null,"order":141},{"id":"w142","hz":"教","py":"jiāo","en":"to teach","hsk":3,"box":0,"due":null,"order":142},{"id":"w143","hz":"接","py":"jiē","en":"to pick up; answer (phone)","hsk":3,"box":0,"due":null,"order":143},{"id":"w144","hz":"结束","py":"jiéshù","en":"to end","hsk":3,"box":0,"due":null,"order":144},{"id":"w145","hz":"解决","py":"jiějué","en":"to solve","hsk":3,"box":0,"due":null,"order":145},{"id":"w146","hz":"经常","py":"jīngcháng","en":"often","hsk":3,"box":0,"due":null,"order":146},{"id":"w147","hz":"经理","py":"jīnglǐ","en":"manager","hsk":3,"box":0,"due":null,"order":147},{"id":"w148","hz":"决定","py":"juédìng","en":"to decide","hsk":3,"box":0,"due":null,"order":148},{"id":"w149","hz":"渴","py":"kě","en":"thirsty","hsk":3,"box":0,"due":null,"order":149},{"id":"w150","hz":"空调","py":"kōngtiáo","en":"air conditioner","hsk":3,"box":0,"due":null,"order":150},{"id":"w151","hz":"筷子","py":"kuàizi","en":"chopsticks","hsk":3,"box":0,"due":null,"order":151},{"id":"w152","hz":"了解","py":"liǎojiě","en":"to understand, know about","hsk":3,"box":0,"due":null,"order":152},{"id":"w153","hz":"邻居","py":"línjū","en":"neighbour","hsk":3,"box":0,"due":null,"order":153},{"id":"w154","hz":"满意","py":"mǎnyì","en":"satisfied","hsk":3,"box":0,"due":null,"order":154},{"id":"w155","hz":"拿","py":"ná","en":"to take, hold","hsk":3,"box":0,"due":null,"order":155},{"id":"w156","hz":"难","py":"nán","en":"difficult","hsk":3,"box":0,"due":null,"order":156},{"id":"w157","hz":"努力","py":"nǔlì","en":"to work hard","hsk":3,"box":0,"due":null,"order":157},{"id":"w158","hz":"其实","py":"qíshí","en":"actually","hsk":3,"box":0,"due":null,"order":158},{"id":"w159","hz":"奇怪","py":"qíguài","en":"strange","hsk":3,"box":0,"due":null,"order":159},{"id":"w160","hz":"清楚","py":"qīngchu","en":"clear","hsk":3,"box":0,"due":null,"order":160},{"id":"w161","hz":"请假","py":"qǐngjià","en":"to ask for leave","hsk":3,"box":0,"due":null,"order":161},{"id":"w162","hz":"认为","py":"rènwéi","en":"to think, believe","hsk":3,"box":0,"due":null,"order":162},{"id":"w163","hz":"认真","py":"rènzhēn","en":"serious, careful","hsk":3,"box":0,"due":null,"order":163},{"id":"w164","hz":"容易","py":"róngyì","en":"easy","hsk":3,"box":0,"due":null,"order":164},{"id":"w165","hz":"如果","py":"rúguǒ","en":"if","hsk":3,"box":0,"due":null,"order":165},{"id":"w166","hz":"生气","py":"shēngqì","en":"angry","hsk":3,"box":0,"due":null,"order":166},{"id":"w167","hz":"声音","py":"shēngyīn","en":"sound, voice","hsk":3,"box":0,"due":null,"order":167},{"id":"w168","hz":"试","py":"shì","en":"to try","hsk":3,"box":0,"due":null,"order":168},{"id":"w169","hz":"舒服","py":"shūfu","en":"comfortable","hsk":3,"box":0,"due":null,"order":169},{"id":"w170","hz":"特别","py":"tèbié","en":"especially; special","hsk":3,"box":0,"due":null,"order":170},{"id":"w171","hz":"疼","py":"téng","en":"to hurt","hsk":3,"box":0,"due":null,"order":171},{"id":"w172","hz":"提高","py":"tígāo","en":"to improve","hsk":3,"box":0,"due":null,"order":172},{"id":"w173","hz":"同事","py":"tóngshì","en":"colleague","hsk":3,"box":0,"due":null,"order":173},{"id":"w174","hz":"突然","py":"tūrán","en":"suddenly","hsk":3,"box":0,"due":null,"order":174},{"id":"w175","hz":"完成","py":"wánchéng","en":"to complete","hsk":3,"box":0,"due":null,"order":175},{"id":"w176","hz":"忘记","py":"wàngjì","en":"to forget","hsk":3,"box":0,"due":null,"order":176},{"id":"w177","hz":"为了","py":"wèile","en":"in order to","hsk":3,"box":0,"due":null,"order":177},{"id":"w178","hz":"习惯","py":"xíguàn","en":"habit; be used to","hsk":3,"box":0,"due":null,"order":178},{"id":"w179","hz":"洗手间","py":"xǐshǒujiān","en":"toilet","hsk":3,"box":0,"due":null,"order":179},{"id":"w180","hz":"相信","py":"xiāngxìn","en":"to believe","hsk":3,"box":0,"due":null,"order":180},{"id":"w181","hz":"小心","py":"xiǎoxīn","en":"careful","hsk":3,"box":0,"due":null,"order":181},{"id":"w182","hz":"需要","py":"xūyào","en":"to need","hsk":3,"box":0,"due":null,"order":182},{"id":"w183","hz":"选择","py":"xuǎnzé","en":"to choose","hsk":3,"box":0,"due":null,"order":183},{"id":"w184","hz":"一般","py":"yìbān","en":"usually; ordinary","hsk":3,"box":0,"due":null,"order":184},{"id":"w185","hz":"一定","py":"yídìng","en":"definitely","hsk":3,"box":0,"due":null,"order":185},{"id":"w186","hz":"一共","py":"yígòng","en":"altogether","hsk":3,"box":0,"due":null,"order":186},{"id":"w187","hz":"一会儿","py":"yíhuìr","en":"a moment","hsk":3,"box":0,"due":null,"order":187},{"id":"w188","hz":"一样","py":"yíyàng","en":"the same","hsk":3,"box":0,"due":null,"order":188},{"id":"w189","hz":"一直","py":"yìzhí","en":"all along; straight","hsk":3,"box":0,"due":null,"order":189},{"id":"w190","hz":"以前","py":"yǐqián","en":"before","hsk":3,"box":0,"due":null,"order":190},{"id":"w191","hz":"银行","py":"yínháng","en":"bank","hsk":3,"box":0,"due":null,"order":191},{"id":"w192","hz":"应该","py":"yīnggāi","en":"should","hsk":3,"box":0,"due":null,"order":192},{"id":"w193","hz":"用","py":"yòng","en":"to use","hsk":3,"box":0,"due":null,"order":193},{"id":"w194","hz":"遇到","py":"yùdào","en":"to come across","hsk":3,"box":0,"due":null,"order":194},{"id":"w195","hz":"愿意","py":"yuànyì","en":"willing","hsk":3,"box":0,"due":null,"order":195},{"id":"w196","hz":"越来越","py":"yuèláiyuè","en":"more and more","hsk":3,"box":0,"due":null,"order":196},{"id":"w197","hz":"着急","py":"zháojí","en":"anxious, in a hurry","hsk":3,"box":0,"due":null,"order":197},{"id":"w198","hz":"照顾","py":"zhàogù","en":"to take care of","hsk":3,"box":0,"due":null,"order":198},{"id":"w199","hz":"只","py":"zhǐ","en":"only","hsk":3,"box":0,"due":null,"order":199},{"id":"w200","hz":"终于","py":"zhōngyú","en":"finally","hsk":3,"box":0,"due":null,"order":200},{"id":"w201","hz":"重要","py":"zhòngyào","en":"important","hsk":3,"box":0,"due":null,"order":201},{"id":"w202","hz":"周末","py":"zhōumò","en":"weekend","hsk":3,"box":0,"due":null,"order":202},{"id":"w203","hz":"注意","py":"zhùyì","en":"to pay attention","hsk":3,"box":0,"due":null,"order":203},{"id":"w204","hz":"自己","py":"zìjǐ","en":"oneself","hsk":3,"box":0,"due":null,"order":204},{"id":"w205","hz":"总是","py":"zǒngshì","en":"always","hsk":3,"box":0,"due":null,"order":205},{"id":"w206","hz":"最近","py":"zuìjìn","en":"recently","hsk":3,"box":0,"due":null,"order":206}];
+const LS_KEY = "mary-hsk3-v1";
+const S = {words:new Map(), settings:{...DEFAULTS}, logs:new Map(), loaded:false, storageOk:true};
+const T = () => today();
+let LOCAL = {p:{}, logs:{}, settings:null};
+try { const raw = localStorage.getItem(LS_KEY); if (raw) LOCAL = {p:{}, logs:{}, settings:null, ...JSON.parse(raw)}; } catch(e) { S.storageOk = false; }
+function saveLocal(){
+  const cutoff = addDays(T(), -90);
+  for (const d of Object.keys(LOCAL.logs)) if (d < cutoff) delete LOCAL.logs[d];
+  try { localStorage.setItem(LS_KEY, JSON.stringify(LOCAL)); }
+  catch(e) { S.storageOk = false; showStatus("This browser isn't saving your progress (private mode?). Open it in normal Safari or Chrome, and use “Copy for Laoshi” to keep a copy.", "bad"); }
+}
+function loadState(){
+  S.words = new Map(WORDS.map(w => [w.id, {...w, ...(LOCAL.p[w.id]||{})}]));
+  S.logs = new Map(Object.entries(LOCAL.logs||{}));
+  S.settings = {...DEFAULTS, ...(LOCAL.settings||{})};
+  S.loaded = true;
+}
+function saveWord(id, patch){ LOCAL.p[id] = {...(LOCAL.p[id]||{}), ...patch}; saveLocal(); }
+function todayLog(){ return {date:T(), reviewed:0, right:0, newLearned:0, reading:0, order:0, speak:false, ...(S.logs.get(T())||{})}; }
+function bumpLog(patch){
+  const cur = todayLog();
+  for (const [k,v] of Object.entries(patch)) cur[k] = (typeof v === "number") ? (cur[k]||0) + v : v;
+  S.logs.set(T(), cur); LOCAL.logs[T()] = cur; saveLocal();
+  renderToday(); renderProgress();
+}
+/* progress code for Laoshi: words that have left "new", plus the last 14 days */
+function progressCode(){
+  const w = {};
+  for (const x of S.words.values()) if (x.box) w[x.id] = [x.box, x.due||"", x.right||0, x.wrong||0];
+  const l = {};
+  for (let i=0;i<14;i++){ const d = addDays(T(),-i), x = S.logs.get(d); if (x) l[d] = [x.reviewed||0, x.right||0, x.newLearned||0, x.reading||0, x.order||0, x.speak?1:0]; }
+  return "HSK3:" + JSON.stringify({v:1, d:T(), exam:S.settings.examDate, w, l});
+}
+async function copyProgress(note){
+  const code = progressCode(), box = $("#exportBox");
+  box.value = code; box.hidden = false;
+  try { await navigator.clipboard.writeText(code); note.textContent = "Copied. Paste it in your Laoshi chat."; }
+  catch(e) { box.focus(); box.select(); note.textContent = "Select the code below, copy it and paste it in your Laoshi chat."; }
+}
+function showStatus(msg, tone){ const b = $("#status"); b.textContent = msg; b.dataset.tone = tone||""; b.hidden = !msg; }
+
+/* ---------- audio ---------- */
+let zhVoice = null;
+function pickVoice(){
+  try { const vs = speechSynthesis.getVoices(); zhVoice = vs.find(v => /zh[-_]CN/i.test(v.lang)) || vs.find(v => /^zh/i.test(v.lang)) || null; } catch(e) {}
+}
+try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch(e) {}
+let tts = null;
+function say(text, slow){
+  try {
+    if ("speechSynthesis" in window) {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "zh-CN"; if (zhVoice) u.voice = zhVoice; u.rate = slow ? 0.6 : 0.9;
+      speechSynthesis.speak(u); return;
+    }
+  } catch(e) {}
+  if (tts) tts.speak(text, {language:"zh", rate: slow ? 0.7 : 1}).catch(()=>{});
+}
+const speakBtns = text => el("div",{class:"row",style:"justify-content:center"},
+  el("button",{class:"speak",type:"button",onclick:()=>say(text,true),"aria-label":"Play slowly"},"🔊 Slow"),
+  el("button",{class:"speak",type:"button",onclick:()=>say(text,false),"aria-label":"Play at normal speed"},"🔊 Normal"));
+
+/* ---------- derived ---------- */
+function wordList(){ return [...S.words.values()]; }
+function dueWords(){ const d = T(); return wordList().filter(w => w.box>=1 && w.box<=5 && w.due && w.due<=d).sort((a,b)=> (a.due<b.due?-1:a.due>b.due?1:a.box-b.box)); }
+function newWords(){ return wordList().filter(w => !w.box).sort((a,b)=>(a.order||0)-(b.order||0)); }
+function streak(){
+  let n = 0, d = T();
+  const active = x => x && ((x.reviewed||0) + (x.newLearned||0) + (x.reading||0) + (x.order||0) > 0 || x.speak);
+  if (!active(S.logs.get(d))) d = addDays(d,-1);
+  while (active(S.logs.get(d))) { n++; d = addDays(d,-1); }
+  return n;
+}
+
+/* ---------- TODAY ---------- */
+let TASKS = [];
+function openTask(t){
+  if (t.toggle) { location.hash = "#progress"; copyProgress($("#exportNote")); return; }
+  if (t.seg) setSeg(t.seg);
+  if (t.go === "#cards" && !current) sessionBuilt = false;
+  if (location.hash === t.go) route(); else location.hash = t.go;
+}
+function goNext(){
+  const t = TASKS.find(x=>!x.done && !x.toggle) || TASKS.find(x=>!x.done);
+  if (t) openTask(t); else { setSeg("read"); location.hash = "#practice"; }
+}
+document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#continueBtn")) goNext(); });
+function renderHeader(){
+  const d = T();
+  const nice = new Intl.DateTimeFormat("en-GB",{timeZone:TZ,weekday:"long",day:"numeric",month:"short"}).format(new Date());
+  $("#dateLine").textContent = nice + " · Shenzhen";
+  const left = diffDays(d, S.settings.examDate || DEFAULTS.examDate);
+  $("#daysLeft").textContent = left >= 0 ? left : "–";
+}
+function renderToday(){
+  renderHeader();
+  const lg = todayLog(), due = dueWords(), nw = newWords();
+  const reviewTarget = Math.min(S.settings.reviewCap, due.length + (lg.reviewed||0));
+  const newTarget = Math.min(S.settings.dailyNew, nw.length + (lg.newLearned||0));
+  const tasks = [
+    {k:"review", title:"Review words", sub: S.loaded ? (due.length && (lg.reviewed||0) < reviewTarget ? `${reviewTarget-(lg.reviewed||0)} to go · ${lg.reviewed||0} done` : `${lg.reviewed||0} reviewed today`) : "Loading…",
+      done: S.loaded && (due.length===0 || (lg.reviewed||0) >= reviewTarget), go:"#cards"},
+    {k:"new", title:"Learn new words", sub: S.loaded ? `${lg.newLearned||0} / ${newTarget} new` : "Loading…",
+      done: S.loaded && (lg.newLearned||0) >= newTarget, go:"#cards"},
+    {k:"reading", title:"Reading · 阅读", sub:"1 short text, HSK style", done:(lg.reading||0)>=1, go:"#practice", seg:"read"},
+    {k:"order", title:"Sentence order · 排序", sub:`${Math.min(lg.order||0,5)} / 5 sentences`, done:(lg.order||0)>=5, go:"#practice", seg:"order"},
+    {k:"speak", title:"Speaking with Laoshi", sub:"Copy your code, paste it in the Laoshi chat, then tap the circle when done.", done:!!lg.speak, toggle:true}
+  ];
+  TASKS = tasks;
+  const ul = $("#taskList"); ul.replaceChildren();
+  for (const t of tasks) {
+    const action = t.toggle
+      ? el("button",{type:"button",onclick:()=>{ location.hash="#progress"; copyProgress($("#exportNote")); }}, "Copy code")
+      : el("button",{type:"button",class: t.done ? "ghost" : "primary",onclick:()=>openTask(t)}, t.done ? "Again" : "Start");
+    const tick = t.toggle
+      ? el("button",{type:"button",class:"tick btn-tick","aria-label": lg.speak ? "Mark speaking lesson not done" : "Mark speaking lesson done",onclick:()=>bumpLog({speak:!lg.speak})}, t.done ? "✓" : "")
+      : el("span",{class:"tick","aria-hidden":"true"}, t.done ? "✓" : "");
+    ul.append(el("li",{class:"task","data-done":t.done?"1":"0"}, tick,
+      el("div",{}, el("div",{class:"t-title",text:t.title}), el("div",{class:"t-sub",text:t.sub})),
+      action));
+  }
+  const n = tasks.filter(t=>t.done).length, all = n === tasks.length;
+  $("#ringNum").textContent = `${n}/${tasks.length}`;
+  $("#ringFg").style.strokeDashoffset = String(326.7 * (1 - n/tasks.length));
+  const st = streak();
+  $("#streakPill").textContent = `连续 ${st} 天 · ${st}-day streak`;
+  const next = tasks.find(t=>!t.done);
+  const cb = $("#continueBtn");
+  cb.textContent = all ? "Practise more" : n === 0 ? "Start today's lesson" : "Continue · " + next.title;
+  $("#greet").textContent = all ? "太棒了，Mary！" : "你好，Mary！";
+  $("#greetEn").textContent = all ? "tài bàng le · Amazing! Everything for today is done." : "Here is today's plan. About 30 minutes.";
+  const ws = wordList();
+  $("#sKnown").textContent = ws.filter(w=>w.box===6).length;
+  $("#sReview").textContent = ws.filter(w=>w.box>=1&&w.box<=5).length;
+  $("#sStreak").textContent = streak();
+}
+
+/* ---------- CARDS ---------- */
+let queue = [], qDone = 0, qTotal = 0, current = null, revealed = false, sessionBuilt = false;
+function buildQueue(){
+  const lg = todayLog();
+  const due = dueWords().slice(0, Math.max(0, S.settings.reviewCap - (lg.reviewed||0)));
+  const nw = newWords().slice(0, Math.max(0, S.settings.dailyNew - (lg.newLearned||0)));
+  queue = [...due.map(w=>({id:w.id,kind:"review",dir:Math.random()<.5?"read":"say"})), ...nw.map(w=>({id:w.id,kind:"new"}))];
+  qDone = 0; qTotal = queue.length; sessionBuilt = true; nextCard();
+}
+function nextCard(){ current = queue.shift() || null; revealed = current && current.kind==="new"; renderCard(); }
+function grade(ok){
+  const w = S.words.get(current.id); if (!w) return nextCard();
+  const d = T(); let patch;
+  if (current.kind === "new") {
+    patch = {box:1, due:addDays(d,1), last:d, learned:d};
+    bumpLog({newLearned:1});
+  } else if (current.relearn) {
+    return (qDone++, nextCard());
+  } else if (ok) {
+    const nb = (w.box||1) + 1;
+    patch = nb >= 6 ? {box:6, due:null, last:d, right:(w.right||0)+1, miss:0} : {box:nb, due:addDays(d, INTERVAL[nb]), last:d, right:(w.right||0)+1, miss:0};
+    bumpLog({reviewed:1, right:1});
+  } else {
+    patch = {box:1, due:addDays(d,1), last:d, wrong:(w.wrong||0)+1, miss:(w.miss||0)+1};
+    bumpLog({reviewed:1});
+    queue.push({id:w.id, kind:"review", dir:"read", relearn:true}); qTotal++;
+  }
+  S.words.set(w.id, {...w, ...patch});
+  saveWord(w.id, patch);
+  qDone++; nextCard();
+}
+function renderCard(){
+  const area = $("#cardArea"); area.replaceChildren();
+  $("#qBar").style.width = qTotal ? (100*qDone/qTotal)+"%" : "0";
+  $("#queueInfo").textContent = qTotal ? `${qDone} / ${qTotal}` : "";
+  if (!S.loaded) { area.append(el("div",{class:"card"}, el("p",{class:"muted",text:"Loading your words…"}))); return; }
+  if (!S.words.size) { area.append(el("div",{class:"card"}, el("h2",{text:"No words yet"}), el("p",{class:"muted",text:"Ask Laoshi in chat to add your word list. It will show up here."}))); return; }
+  if (!current) {
+    const left = dueWords().length, nl = newWords().length;
+    area.append(el("div",{class:"card"},
+      el("div",{class:"big",text:"好了！"}), el("div",{class:"py",text:"hǎo le!"}),
+      el("p",{class:"muted",text: qTotal ? `Session done · ${qDone} cards.` : "Nothing due right now."}),
+      el("p",{class:"note",text:`${left} still due · ${nl} new words waiting`}),
+      el("div",{class:"row",style:"justify-content:center"},
+        el("button",{class:"primary",type:"button",onclick:()=>{ renderToday(); goNext(); }}, "Continue"),
+        el("button",{type:"button",onclick:buildQueue}, sessionBuilt ? "Another round" : "Start words"))));
+    return;
+  }
+  const w = S.words.get(current.id);
+  if (!w) return nextCard();
+  const ladder = el("div",{class:"ladder","aria-label":`Box ${w.box||0} of 5`}, ...[1,2,3,4,5].map(i=>el("i",{class:(w.box||0)>=i?"on":""})));
+  const meta = el("div",{class:"row",style:"justify-content:center"},
+    current.kind==="new" ? el("span",{class:"chip new",text:"New word"}) : el("span",{class:"chip",text: current.relearn ? "Try again" : `Box ${w.box}`}),
+    w.hsk ? el("span",{class:"chip",text:"HSK "+w.hsk}) : null);
+  const card = el("div",{class:"card"}, meta);
+  if (current.kind === "new" || revealed) {
+    card.append(el("div",{class:"big",text:w.hz}), el("div",{class:"py",text:w.py}), el("div",{class:"en",text:w.en}));
+    if (w.ex) card.append(el("p",{class:"note han",text:w.ex}));
+    card.append(speakBtns(w.hz), ladder);
+  } else if (current.dir === "say") {
+    card.append(el("div",{class:"prompt",text:"Say it in Chinese, out loud"}), el("div",{class:"en",style:"font-size:28px",text:w.en}));
+  } else {
+    card.append(el("div",{class:"prompt",text:"Read it aloud. What does it mean?"}), el("div",{class:"big",text:w.hz}));
+  }
+  area.append(card);
+  if (current.kind === "new") {
+    area.append(el("button",{class:"primary",type:"button",onclick:()=>grade(true),style:"width:100%"},"Got it · next"));
+  } else if (!revealed) {
+    area.append(el("button",{class:"primary",type:"button",style:"width:100%",onclick:()=>{ revealed=true; renderCard(); say(w.hz,false); }},"Show answer"));
+  } else if (current.relearn) {
+    area.append(el("button",{class:"primary",type:"button",style:"width:100%",onclick:()=>grade(true)},"Next"));
+  } else {
+    area.append(el("div",{class:"answer-row"},
+      el("button",{class:"bad",type:"button",onclick:()=>grade(false)},"✗ Missed it"),
+      el("button",{class:"good",type:"button",onclick:()=>grade(true)},"✓ Got it")));
+  }
+}
+
+/* ---------- PRACTICE: reading ---------- */
+const READINGS = [
+ {title:"周末", zh:"这个周末我不想在家休息。我打算和朋友一起去爬山。我们早上七点在地铁站见面，因为天气热，所以要早一点儿出发。爬完山，我们去附近的饭馆吃饭。",
+  py:"Zhège zhōumò wǒ bù xiǎng zài jiā xiūxi. Wǒ dǎsuàn hé péngyou yìqǐ qù páshān. Wǒmen zǎoshang qī diǎn zài dìtiězhàn jiànmiàn, yīnwèi tiānqì rè, suǒyǐ yào zǎo yìdiǎnr chūfā. Pá wán shān, wǒmen qù fùjìn de fànguǎn chīfàn.",
+  en:"This weekend I don't want to rest at home. I plan to go hiking with friends. We meet at the metro station at 7 a.m. Because it's hot, we need to leave a bit early. After the hike we'll eat at a restaurant nearby.",
+  qs:[{q:"他们什么时候见面？",en:"When do they meet?",o:["早上七点","中午十二点","晚上七点"],a:0},
+      {q:"为什么要早一点儿出发？",en:"Why leave a bit early?",o:["地铁很慢","天气热","饭馆很远"],a:1}]},
+ {title:"点外卖", zh:"我最近工作很忙，经常没有时间做饭，所以常常点外卖。外卖很方便，二十分钟就到了。但是我觉得外卖的菜比较油，对身体不太好。我希望周末能自己做饭。",
+  py:"Wǒ zuìjìn gōngzuò hěn máng, jīngcháng méiyǒu shíjiān zuòfàn, suǒyǐ chángcháng diǎn wàimài. Wàimài hěn fāngbiàn, èrshí fēnzhōng jiù dào le. Dànshì wǒ juéde wàimài de cài bǐjiào yóu, duì shēntǐ bú tài hǎo. Wǒ xīwàng zhōumò néng zìjǐ zuòfàn.",
+  en:"I've been busy at work lately and often have no time to cook, so I order delivery a lot. It's convenient: it arrives in 20 minutes. But the food is quite oily, not great for your health. I hope I can cook myself at the weekend.",
+  qs:[{q:"她为什么常常点外卖？",en:"Why does she often order delivery?",o:["不会做饭","工作很忙","外卖很便宜"],a:1},
+      {q:"她觉得外卖的菜怎么样？",en:"What does she think of delivery food?",o:["很慢","很贵","比较油"],a:2}]},
+ {title:"新同事", zh:"我们公司来了一个新同事，她叫小林。她是广州人，会说普通话和广东话。小林工作很认真，每天都是第一个到公司的。下班以后，她还去学英语。大家都很喜欢她。",
+  py:"Wǒmen gōngsī lái le yí ge xīn tóngshì, tā jiào Xiǎo Lín. Tā shì Guǎngzhōu rén, huì shuō Pǔtōnghuà hé Guǎngdōnghuà. Xiǎo Lín gōngzuò hěn rènzhēn, měitiān dōu shì dì-yī ge dào gōngsī de. Xiàbān yǐhòu, tā hái qù xué Yīngyǔ. Dàjiā dōu hěn xǐhuan tā.",
+  en:"A new colleague joined our company, Xiao Lin. She's from Guangzhou and speaks Mandarin and Cantonese. She works very carefully and is the first to arrive every day. After work she also studies English. Everyone likes her.",
+  qs:[{q:"小林会说什么话？",en:"What languages does Xiao Lin speak?",o:["只会说英语","普通话和广东话","只会说广东话"],a:1},
+      {q:"关于小林，哪个是对的？",en:"Which is true about Xiao Lin?",o:["她经常迟到","她每天很早到公司","她不喜欢学习"],a:1}]},
+ {title:"感冒了", zh:"昨天下雨，我忘记带伞了，回家以后就感冒了。今天早上我头疼，不想吃东西。我给经理打电话请假。经理说：“你好好儿休息，多喝水，别担心工作。”",
+  py:"Zuótiān xià yǔ, wǒ wàngjì dài sǎn le, huí jiā yǐhòu jiù gǎnmào le. Jīntiān zǎoshang wǒ tóu téng, bù xiǎng chī dōngxi. Wǒ gěi jīnglǐ dǎ diànhuà qǐngjià. Jīnglǐ shuō: “Nǐ hǎohāor xiūxi, duō hē shuǐ, bié dānxīn gōngzuò.”",
+  en:"Yesterday it rained and I forgot my umbrella, so I caught a cold after getting home. This morning my head hurts and I don't want to eat. I called my manager to ask for leave. The manager said: \"Rest well, drink lots of water, don't worry about work.\"",
+  qs:[{q:"她为什么感冒了？",en:"Why did she catch a cold?",o:["没带伞","吃得太多","工作太累"],a:0},
+      {q:"经理让她做什么？",en:"What does the manager tell her to do?",o:["去公司","好好儿休息","多吃东西"],a:1}]},
+ {title:"坐地铁", zh:"在深圳，坐地铁比打车便宜，也不会堵车。我家离地铁站很近，走路五分钟就到了。不过早上八点到九点人特别多，所以我一般七点半就出门。",
+  py:"Zài Shēnzhèn, zuò dìtiě bǐ dǎchē piányi, yě bú huì dǔchē. Wǒ jiā lí dìtiězhàn hěn jìn, zǒulù wǔ fēnzhōng jiù dào le. Búguò zǎoshang bā diǎn dào jiǔ diǎn rén tèbié duō, suǒyǐ wǒ yìbān qī diǎn bàn jiù chūmén.",
+  en:"In Shenzhen the metro is cheaper than a taxi and there's no traffic. My home is close to the station, five minutes on foot. But from 8 to 9 a.m. it's very crowded, so I usually leave at 7:30.",
+  qs:[{q:"坐地铁有什么好处？",en:"What's good about the metro?",o:["人很少","便宜，不堵车","很舒服"],a:1},
+      {q:"她一般几点出门？",en:"When does she usually leave home?",o:["七点半","八点","九点"],a:0}]},
+ {title:"学中文", zh:"我来中国已经一年多了。刚来的时候，我只会说“你好”和“谢谢”。现在我每天学习三十分钟，越来越习惯说中文了。我的目标是明年通过HSK三级考试。",
+  py:"Wǒ lái Zhōngguó yǐjīng yì nián duō le. Gāng lái de shíhou, wǒ zhǐ huì shuō “nǐ hǎo” hé “xièxie”. Xiànzài wǒ měitiān xuéxí sānshí fēnzhōng, yuèláiyuè xíguàn shuō Zhōngwén le. Wǒ de mùbiāo shì míngnián tōngguò HSK sān jí kǎoshì.",
+  en:"I've been in China for over a year. When I first came I could only say \"hello\" and \"thank you\". Now I study 30 minutes a day and I'm more and more used to speaking Chinese. My goal is to pass HSK 3 next year.",
+  qs:[{q:"她来中国多长时间了？",en:"How long has she been in China?",o:["一年多","三十天","三年"],a:0},
+      {q:"她的目标是什么？",en:"What is her goal?",o:["去旅游","通过HSK三级","找工作"],a:1}]}
+];
+let rIdx = 0, showPy = false, showEn = false, extraReading = null, sample = null;
+function dayIndex(n){ return Math.abs(diffDays("2026-01-01", T())) % n; }
+function renderReading(){
+  const area = $("#readArea"); area.replaceChildren();
+  const r = extraReading || READINGS[rIdx];
+  const p = el("div",{class:"panel stack"},
+    el("div",{class:"row",style:"justify-content:space-between"},
+      el("h2",{class:"han",text:r.title}),
+      el("span",{class:"note",text: extraReading ? "New text" : `Text ${rIdx+1} of ${READINGS.length}`})),
+    el("div",{class:"passage",text:r.zh}));
+  if (showPy) p.append(el("div",{class:"passage-py",text:r.py}));
+  if (showEn) p.append(el("div",{class:"note",text:r.en}));
+  p.append(el("div",{class:"row"},
+    el("button",{type:"button",class:"speak",onclick:()=>say(r.zh,false)},"🔊 Listen"),
+    el("button",{type:"button",class:"speak","aria-pressed":String(showPy),onclick:()=>{showPy=!showPy;renderReading();}}, showPy?"Hide pinyin":"Pinyin"),
+    el("button",{type:"button",class:"speak","aria-pressed":String(showEn),onclick:()=>{showEn=!showEn;renderReading();}}, showEn?"Hide English":"English")));
+  let answered = 0, correct = 0;
+  r.qs.forEach((q,qi) => {
+    const box = el("div",{class:"q"}, el("div",{class:"qz",text:`${qi+1}. ${q.q}`}));
+    const hint = el("div",{class:"note",text:q.en, hidden:true});
+    const opts = el("div",{class:"opts"});
+    q.o.forEach((o,oi) => {
+      const b = el("button",{type:"button"}, el("b",{text:"ABC"[oi]}), el("span",{class:"han",text:o}));
+      b.addEventListener("click", () => {
+        if (opts.dataset.done) return;
+        opts.dataset.done = "1"; hint.hidden = false; answered++;
+        b.dataset.state = oi===q.a ? "right" : "wrong";
+        if (oi===q.a) correct++; else opts.children[q.a].dataset.state = "right";
+        if (answered === r.qs.length) {
+          bumpLog({reading:1});
+          area.append(el("div",{class:"result","data-ok": correct===r.qs.length?"1":"0"},
+            el("div",{text:`${correct} / ${r.qs.length} correct. ${correct===r.qs.length?"很好！":"Read it again with pinyin on, then try the next text."}`})),
+            el("button",{class:"primary big",type:"button",onclick:goNext},"Continue"));
+        }
+      });
+      opts.append(b);
+    });
+    box.append(opts, hint); p.append(box);
+  });
+  area.append(p);
+  const nav = el("div",{class:"row"},
+    el("button",{type:"button",onclick:()=>{ extraReading=null; rIdx=(rIdx+1)%READINGS.length; showPy=false; showEn=false; renderReading(); }},"Next text"));
+  if (sample) nav.append(el("button",{type:"button",id:"genBtn",onclick:genReading},"✨ Make a new text"));
+  area.append(nav, el("p",{class:"note",id:"genNote"}));
+}
+async function genReading(){
+  const btn = $("#genBtn"), note = $("#genNote");
+  btn.disabled = true; note.textContent = "Writing a new text…";
+  const known = wordList().filter(w=>w.box>=1).map(w=>w.hz).slice(0,120).join("、");
+  const prompt = `Write one short HSK 3 reading passage in simplified Chinese (60-90 characters) about everyday life in Shenzhen (shopping, metro, food, friends, work, weather, health). Use mostly HSK 1-3 words. Prefer these words the learner knows: ${known}.
+Then write 2 multiple-choice comprehension questions in Chinese, each with exactly 3 options in Chinese, like the HSK 3 exam.
+Reply with only JSON in this shape:
+{"title":"2-4 Chinese characters","zh":"passage","py":"full pinyin with tone marks","en":"English translation","qs":[{"q":"question in Chinese","en":"question in English","o":["A","B","C"],"a":0}]}`;
+  try {
+    const r = await sample.json(prompt, {cache:false});
+    const ok = r && typeof r.zh==="string" && Array.isArray(r.qs) && r.qs.length && r.qs.every(q=>q && Array.isArray(q.o) && q.o.length===3 && Number.isInteger(q.a) && q.a>=0 && q.a<3);
+    if (!ok) throw {code:"invalid_json"};
+    extraReading = {title:String(r.title||"新课文"), zh:String(r.zh), py:String(r.py||""), en:String(r.en||""), qs:r.qs.map(q=>({q:String(q.q),en:String(q.en||""),o:q.o.map(String),a:q.a}))};
+    showPy=false; showEn=false; renderReading();
+  } catch(e) {
+    btn.disabled = false;
+    if (e && (e.code==="not_granted"||e.code==="sampling_disabled"||e.code==="capability_disabled"||e.code==="capability_removed"||e.code==="not_declared")) { sample = null; renderReading(); return; }
+    note.textContent = e && e.code==="rate_limited" ? "Too many requests right now. Try again later." : "That didn't work. Tap again to try another text.";
+  }
+}
+
+/* ---------- PRACTICE: sentence order ---------- */
+const ORDERS = [
+ {t:["已经","我","吃饭了"], a:["我已经吃饭了"], py:"Wǒ yǐjīng chīfàn le.", en:"I've already eaten."},
+ {t:["比","今天","昨天","热"], a:["今天比昨天热"], py:"Jīntiān bǐ zuótiān rè.", en:"Today is hotter than yesterday."},
+ {t:["打算","我","去北京","明年"], a:["我明年打算去北京","明年我打算去北京"], py:"Wǒ míngnián dǎsuàn qù Běijīng.", en:"I plan to go to Beijing next year."},
+ {t:["地铁站","离","很近","我家"], a:["我家离地铁站很近"], py:"Wǒ jiā lí dìtiězhàn hěn jìn.", en:"My home is close to the metro station."},
+ {t:["把","请","关上","门"], a:["请把门关上"], py:"Qǐng bǎ mén guānshang.", en:"Please close the door."},
+ {t:["越来越","好了","你的中文"], a:["你的中文越来越好了"], py:"Nǐ de Zhōngwén yuèláiyuè hǎo le.", en:"Your Chinese is getting better and better."},
+ {t:["被","我的手机","弟弟","拿走了"], a:["我的手机被弟弟拿走了"], py:"Wǒ de shǒujī bèi dìdi ná zǒu le.", en:"My phone was taken by my little brother."},
+ {t:["一次","我","去过","上海"], a:["我去过一次上海","我去过上海一次"], py:"Wǒ qùguo yí cì Shànghǎi.", en:"I've been to Shanghai once."},
+ {t:["得","她","很快","跑"], a:["她跑得很快"], py:"Tā pǎo de hěn kuài.", en:"She runs fast."},
+ {t:["在","我","深圳","工作"], a:["我在深圳工作"], py:"Wǒ zài Shēnzhèn gōngzuò.", en:"I work in Shenzhen."},
+ {t:["一边","喝咖啡","一边","他","看书"], a:["他一边喝咖啡一边看书","他一边看书一边喝咖啡"], py:"Tā yìbiān hē kāfēi yìbiān kàn shū.", en:"He reads while drinking coffee."},
+ {t:["你","明天","给","我","发微信"], a:["我明天给你发微信","明天我给你发微信"], py:"Wǒ míngtiān gěi nǐ fā Wēixìn.", en:"I'll send you a WeChat tomorrow."},
+ {t:["没有","今天","昨天","冷"], a:["今天没有昨天冷"], py:"Jīntiān méiyǒu zuótiān lěng.", en:"Today isn't as cold as yesterday."},
+ {t:["正在","她","开会","呢"], a:["她正在开会呢"], py:"Tā zhèngzài kāihuì ne.", en:"She's in a meeting right now."},
+ {t:["因为下雨了","我们","所以","不去了"], a:["因为下雨了所以我们不去了"], py:"Yīnwèi xià yǔ le, suǒyǐ wǒmen bú qù le.", en:"Because it's raining, we're not going."},
+ {t:["有点儿","这件衣服","贵"], a:["这件衣服有点儿贵"], py:"Zhè jiàn yīfu yǒudiǎnr guì.", en:"This piece of clothing is a bit expensive."}
+];
+let oIdx = 0, picked = [], checked = null, shuffled = [];
+function shuffle(n){ const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function loadOrder(i){ oIdx = i % ORDERS.length; picked = []; checked = null; const it = ORDERS[oIdx]; do { shuffled = shuffle(it.t.length); } while (it.t.length>1 && it.a.includes(shuffled.map(k=>it.t[k]).join(""))); renderOrder(); }
+function renderOrder(){
+  const area = $("#orderArea"); area.replaceChildren();
+  const it = ORDERS[oIdx];
+  const p = el("div",{class:"panel stack"},
+    el("div",{class:"row",style:"justify-content:space-between"},
+      el("h2",{text:"Put the words in order"}),
+      el("span",{class:"note",text:`${oIdx+1} / ${ORDERS.length}`})),
+    el("p",{class:"note",style:"margin:0",text:"HSK 3 writing, part 1: tap the pieces to build the sentence."}));
+  const slot = el("div",{class:"slot","aria-label":"Your sentence"});
+  if (!picked.length) slot.append(el("span",{class:"note",text:"Tap the words below…"}));
+  picked.forEach((k,pi) => slot.append(el("button",{type:"button",class:"tile han",disabled:!!checked,onclick:()=>{ picked.splice(pi,1); renderOrder(); }}, it.t[k])));
+  const tiles = el("div",{class:"tiles"});
+  shuffled.forEach(k => tiles.append(el("button",{type:"button",class:"tile han"+(picked.includes(k)?" used":""),disabled:!!checked||picked.includes(k),onclick:()=>{ picked.push(k); renderOrder(); }}, it.t[k])));
+  p.append(slot, tiles);
+  if (checked) {
+    p.append(el("div",{class:"result","data-ok":checked.ok?"1":"0"},
+      el("div",{text: checked.ok ? "✓ 对了！ Correct." : "✗ Not quite. The answer:"}),
+      el("div",{class:"han",text:it.a[0]+"。"}), el("div",{text:it.py}), el("div",{class:"note",text:it.en})),
+      el("div",{class:"row"}, el("button",{type:"button",class:"speak",onclick:()=>say(it.a[0],false)},"🔊 Listen"),
+        el("button",{type:"button",class:"primary",onclick:()=>loadOrder(oIdx+1)},"Next sentence"),
+        (todayLog().order||0) >= 5 ? el("button",{type:"button",onclick:goNext},"Done for today") : null));
+  } else {
+    p.append(el("div",{class:"row"},
+      el("button",{type:"button",class:"primary",disabled:picked.length!==it.t.length,onclick:()=>{
+        const s = strip(picked.map(k=>it.t[k]).join(""));
+        checked = {ok: it.a.some(a=>strip(a)===s)}; bumpLog({order:1}); renderOrder(); }},"Check"),
+      el("button",{type:"button",onclick:()=>{ picked=[]; renderOrder(); }},"Clear")));
+  }
+  area.append(p);
+}
+function setSeg(which){
+  $("#segRead").setAttribute("aria-pressed", String(which==="read"));
+  $("#segOrder").setAttribute("aria-pressed", String(which==="order"));
+  $("#readArea").hidden = which!=="read"; $("#orderArea").hidden = which!=="order";
+}
+$("#segRead").addEventListener("click",()=>setSeg("read"));
+$("#segOrder").addEventListener("click",()=>setSeg("order"));
+
+/* ---------- PROGRESS ---------- */
+function renderProgress(){
+  const ws = wordList();
+  const cols = [["New",w=>!w.box,"new"],["1",w=>w.box===1],["2",w=>w.box===2],["3",w=>w.box===3],["4",w=>w.box===4],["5",w=>w.box===5],["Known",w=>w.box===6,"known"]];
+  const counts = cols.map(c=>ws.filter(c[1]).length), max = Math.max(1,...counts);
+  const chart = $("#boxChart"); chart.replaceChildren();
+  cols.forEach((c,i)=>chart.append(el("div",{class:"col"},
+    el("span",{class:"n",text:counts[i]}),
+    el("div",{class:"bar "+(c[2]||""),style:`height:${Math.round(100*counts[i]/max)}px`}),
+    el("span",{class:"l",text:c[0]}))));
+  const dots = $("#dayDots"); dots.replaceChildren();
+  let active = 0, cards = 0;
+  for (let i=13;i>=0;i--){
+    const d = addDays(T(),-i), x = S.logs.get(d);
+    const n = x ? (x.reviewed||0)+(x.newLearned||0)+(x.reading||0)+(x.order||0)+(x.speak?5:0) : 0;
+    if (n) active++; cards += x ? (x.reviewed||0)+(x.newLearned||0) : 0;
+    dots.append(el("i",{"data-l": n===0?"0": n<15?"1":"2", title:`${d}: ${n} activities`}));
+  }
+  $("#daySummary").textContent = `${active} of the last 14 days studied · ${cards} word cards`;
+}
+function fillSettings(){
+  $("#examDate").value = S.settings.examDate;
+  $("#dailyNew").value = String(S.settings.dailyNew);
+  $("#reviewCap").value = String(S.settings.reviewCap);
+}
+$("#settingsForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const s = {examDate: $("#examDate").value || DEFAULTS.examDate, dailyNew: +$("#dailyNew").value, reviewCap: +$("#reviewCap").value};
+  S.settings = s; LOCAL.settings = s; saveLocal(); renderToday();
+  $("#saveNote").textContent = S.storageOk ? "Saved." : "Couldn't save on this browser.";
+});
+$("#exportBtn").addEventListener("click", () => copyProgress($("#exportNote")));
+
+/* ---------- routing ---------- */
+const VIEWS = ["today","cards","practice","progress"];
+function route(){
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "today";
+  for (const s of document.querySelectorAll("[data-view]")) s.hidden = s.id !== "v-"+v;
+  for (const a of document.querySelectorAll("nav.tabs a")) { if (a.dataset.tab===v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); }
+  if (v==="cards" && S.loaded && !sessionBuilt) buildQueue();
+  if (v==="cards") renderCard();
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange", route);
+
+/* ---------- boot ---------- */
+rIdx = dayIndex(READINGS.length);
+loadState();
+if (!S.storageOk) showStatus("This browser isn't saving your progress (private mode?). Open it in normal Safari or Chrome.", "bad");
+renderToday(); renderReading(); loadOrder(dayIndex(ORDERS.length)); renderProgress(); fillSettings(); route();
+
+/* optional extras when opened inside Claude: new reading texts and a Claude voice */
+const cl = window.claude;
+if (cl && cl.use) {
+  cl.use("sample").then(s => { if (s) { sample = s; renderReading(); } }).catch(()=>{});
+  cl.use("tts").then(t => { tts = t; }).catch(()=>{});
+}
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) { window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
+</script>
+</body>
+</html>
