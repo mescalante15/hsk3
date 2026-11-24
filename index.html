@@ -13,7 +13,6 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<!-- fonts load without blocking, so the app still opens fast if Google Fonts is slow or blocked -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@500;700&display=swap" media="print" onload="this.media='all'">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -253,7 +252,8 @@ nav.tabs a[aria-current="page"]{color:var(--jade)}
       </form>
       <div class="panel stack">
         <div class="eyebrow">Send to Laoshi</div>
-        <p class="note" style="margin:0">Your progress is saved on this phone. Before a chat lesson, copy this code and paste it in your Laoshi chat. Laoshi picks up where you are, and it's your backup too.</p>
+        <p class="note" style="margin:0" id="syncNote" role="status"></p>
+        <p class="note" style="margin:0">Your progress is saved on this phone and syncs with Laoshi by itself. If sync ever fails, copy this code and paste it in your Laoshi chat instead.</p>
         <div class="row"><button class="primary" type="button" id="exportBtn">Copy for Laoshi</button><span class="note" id="exportNote"></span></div>
         <textarea id="exportBox" rows="4" readonly hidden aria-label="Progress code"></textarea>
       </div>
@@ -312,13 +312,13 @@ function loadState(){
   S.settings = {...DEFAULTS, ...(LOCAL.settings||{})};
   S.loaded = true;
 }
-function saveWord(id, patch){ LOCAL.p[id] = {...(LOCAL.p[id]||{}), ...patch}; saveLocal(); }
+function saveWord(id, patch){ LOCAL.p[id] = {...(LOCAL.p[id]||{}), ...patch}; markDirty(); saveLocal(); }
 function todayLog(){ return {date:T(), reviewed:0, right:0, newLearned:0, reading:0, order:0, speak:false, ...(S.logs.get(T())||{})}; }
 function bumpLog(patch){
   const cur = todayLog();
   for (const [k,v] of Object.entries(patch)) cur[k] = (typeof v === "number") ? (cur[k]||0) + v : v;
-  S.logs.set(T(), cur); LOCAL.logs[T()] = cur; saveLocal();
-  renderToday(); renderProgress();
+  S.logs.set(T(), cur); LOCAL.logs[T()] = cur; markDirty(); saveLocal();
+  renderToday(); renderProgress(); renderSync();
 }
 /* progress code for Laoshi: words that have left "new", plus the last 14 days */
 function progressCode(){
@@ -328,6 +328,35 @@ function progressCode(){
   for (let i=0;i<14;i++){ const d = addDays(T(),-i), x = S.logs.get(d); if (x) l[d] = [x.reviewed||0, x.right||0, x.newLearned||0, x.reading||0, x.order||0, x.speak?1:0]; }
   return "HSK3:" + JSON.stringify({v:1, d:T(), exam:S.settings.examDate, w, l});
 }
+/* auto-sync: sends the same progress code to Laoshi's private table (add-only; nothing can be read back from here) */
+const SYNC_URL = "https://flisesbklxtppppmacfr.supabase.co/rest/v1/hsk3_progress";
+const SYNC_KEY = "sb_publishable_i7z1v9MVeKDxZz7yZBnslA_2fDy4mVI";
+if (!LOCAL.device) LOCAL.device = "phone-" + Math.random().toString(36).slice(2,10);
+let syncTimer = null, syncing = false;
+function markDirty(){ LOCAL.dirty = true; clearTimeout(syncTimer); syncTimer = setTimeout(syncNow, 20000); }
+async function syncNow(){
+  clearTimeout(syncTimer);
+  if (!LOCAL.dirty || syncing) return;
+  if (navigator.onLine === false) { renderSync(); return; }
+  syncing = true;
+  try {
+    const r = await fetch(SYNC_URL, {method:"POST", keepalive:true,
+      headers:{apikey:SYNC_KEY, "Content-Type":"application/json", Prefer:"return=minimal"},
+      body: JSON.stringify({device:LOCAL.device, day:T(), payload: JSON.parse(progressCode().slice(5))})});
+    if (r.ok) { LOCAL.dirty = false; LOCAL.lastSync = new Date().toISOString(); }
+  } catch(e) {}
+  syncing = false; saveLocal(); renderSync();
+}
+function renderSync(){
+  const n = document.getElementById("syncNote"); if (!n) return;
+  if (LOCAL.dirty) n.textContent = navigator.onLine === false ? "Offline. Your progress syncs with Laoshi when you're back online." : "Syncing with Laoshi soon…";
+  else if (LOCAL.lastSync) {
+    const mins = Math.round((Date.now() - Date.parse(LOCAL.lastSync))/60000);
+    n.textContent = "✓ Synced with Laoshi " + (mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : mins < 1440 ? Math.round(mins/60) + " h ago" : Math.round(mins/1440) + " days ago");
+  } else n.textContent = "Auto-sync is on. Laoshi sees your progress after your first exercise.";
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") syncNow(); });
+window.addEventListener("online", syncNow);
 async function copyProgress(note){
   const code = progressCode(), box = $("#exportBox");
   box.value = code; box.hidden = false;
@@ -698,7 +727,7 @@ function fillSettings(){
 $("#settingsForm").addEventListener("submit", e => {
   e.preventDefault();
   const s = {examDate: $("#examDate").value || DEFAULTS.examDate, dailyNew: +$("#dailyNew").value, reviewCap: +$("#reviewCap").value};
-  S.settings = s; LOCAL.settings = s; saveLocal(); renderToday();
+  S.settings = s; LOCAL.settings = s; markDirty(); saveLocal(); renderToday();
   $("#saveNote").textContent = S.storageOk ? "Saved." : "Couldn't save on this browser.";
 });
 $("#exportBtn").addEventListener("click", () => copyProgress($("#exportNote")));
@@ -720,6 +749,7 @@ rIdx = dayIndex(READINGS.length);
 loadState();
 if (!S.storageOk) showStatus("This browser isn't saving your progress (private mode?). Open it in normal Safari or Chrome.", "bad");
 renderToday(); renderReading(); loadOrder(dayIndex(ORDERS.length)); renderProgress(); fillSettings(); route();
+saveLocal(); renderSync(); if (LOCAL.dirty) setTimeout(syncNow, 3000);
 
 /* optional extras when opened inside Claude: new reading texts and a Claude voice */
 const cl = window.claude;
