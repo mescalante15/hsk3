@@ -418,7 +418,7 @@ let TASKS = [];
 function openTask(t){
   if (t.toggle) { location.hash = "#progress"; copyProgress($("#exportNote")); return; }
   if (t.seg) setSeg(t.seg);
-  if (t.go === "#cards" && !current) sessionBuilt = false;
+  if (t.go === "#cards" && !current) { sessionBuilt = false; pendingFree = !!t.done; }
   if (location.hash === t.go) route(); else location.hash = t.go;
 }
 function goNext(){
@@ -478,16 +478,30 @@ function renderToday(){
 
 /* ---------- CARDS ---------- */
 let queue = [], qDone = 0, qTotal = 0, current = null, revealed = false, sessionBuilt = false;
-function buildQueue(){
+function buildQueue(extra){
   const lg = todayLog();
-  const due = dueWords().slice(0, Math.max(0, S.settings.reviewCap - (lg.reviewed||0)));
-  const nw = newWords().slice(0, Math.max(0, S.settings.dailyNew - (lg.newLearned||0)));
+  let due = dueWords().slice(0, Math.max(0, S.settings.reviewCap - (lg.reviewed||0)));
+  let nw = newWords().slice(0, Math.max(0, S.settings.dailyNew - (lg.newLearned||0)));
+  if (extra === true && !due.length && !nw.length) {
+    /* bonus round past today's goal: 10 more due words, or 5 new ones if nothing is due */
+    due = dueWords().slice(0, 10);
+    if (!due.length) nw = newWords().slice(0, 5);
+  }
   queue = [...due.map(w=>({id:w.id,kind:"review",dir:Math.random()<.5?"read":"say"})), ...nw.map(w=>({id:w.id,kind:"new"}))];
   qDone = 0; qTotal = queue.length; sessionBuilt = true; nextCard();
+}
+/* free practice: replay learned words with audio; never changes boxes or dates */
+let pendingFree = false;
+function buildFree(){
+  const pool = wordList().filter(w => w.box >= 1);
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  queue = pool.slice(0, 10).map(w => ({id:w.id, kind:"free", dir: Math.random() < .5 ? "read" : "say"}));
+  qDone = 0; qTotal = queue.length; sessionBuilt = true; pendingFree = false; nextCard();
 }
 function nextCard(){ current = queue.shift() || null; revealed = current && current.kind==="new"; renderCard(); }
 function grade(ok){
   const w = S.words.get(current.id); if (!w) return nextCard();
+  if (current.kind === "free") { qDone++; return nextCard(); }
   const d = T(); let patch;
   if (current.kind === "new") {
     patch = {box:1, due:addDays(d,1), last:d, learned:d};
@@ -517,18 +531,20 @@ function renderCard(){
     const left = dueWords().length, nl = newWords().length;
     area.append(el("div",{class:"card"},
       el("div",{class:"big",text:"好了！"}), el("div",{class:"py",text:"hǎo le!"}),
-      el("p",{class:"muted",text: qTotal ? `Session done · ${qDone} cards.` : "Nothing due right now."}),
+      el("p",{class:"muted",text: qTotal ? `Session done · ${qDone} cards.` : (left || nl) ? "Today's word goal is done. Want a bonus round?" : "Nothing due right now."}),
       el("p",{class:"note",text:`${left} still due · ${nl} new words waiting`}),
       el("div",{class:"row",style:"justify-content:center"},
         el("button",{class:"primary",type:"button",onclick:()=>{ renderToday(); goNext(); }}, "Continue"),
-        el("button",{type:"button",onclick:buildQueue}, sessionBuilt ? "Another round" : "Start words"))));
+        left || nl ? el("button",{type:"button",onclick:()=>buildQueue(true)}, "Another round") : null,
+        wordList().some(w => w.box >= 1) ? el("button",{type:"button",onclick:buildFree}, "Free practice") : null),
+      el("p",{class:"note",text:"Free practice replays 10 words you've learned, with audio. It doesn't change your scores."})));
     return;
   }
   const w = S.words.get(current.id);
   if (!w) return nextCard();
   const ladder = el("div",{class:"ladder","aria-label":`Box ${w.box||0} of 5`}, ...[1,2,3,4,5].map(i=>el("i",{class:(w.box||0)>=i?"on":""})));
   const meta = el("div",{class:"row",style:"justify-content:center"},
-    current.kind==="new" ? el("span",{class:"chip new",text:"New word"}) : el("span",{class:"chip",text: current.relearn ? "Try again" : `Box ${w.box}`}),
+    current.kind==="new" ? el("span",{class:"chip new",text:"New word"}) : current.kind==="free" ? el("span",{class:"chip",text:"Free practice · no score"}) : el("span",{class:"chip",text: current.relearn ? "Try again" : `Box ${w.box}`}),
     w.hsk ? el("span",{class:"chip",text:"HSK "+w.hsk}) : null);
   const card = el("div",{class:"card"}, meta);
   if (current.kind === "new" || revealed) {
@@ -752,7 +768,7 @@ function route(){
   const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "today";
   for (const s of document.querySelectorAll("[data-view]")) s.hidden = s.id !== "v-"+v;
   for (const a of document.querySelectorAll("nav.tabs a")) { if (a.dataset.tab===v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); }
-  if (v==="cards" && S.loaded && !sessionBuilt) buildQueue();
+  if (v==="cards" && S.loaded && !sessionBuilt) { if (pendingFree) buildFree(); else buildQueue(); }
   if (v==="cards") renderCard();
   window.scrollTo(0,0);
 }
@@ -763,6 +779,7 @@ rIdx = dayIndex(READINGS.length);
 loadState();
 if (!S.storageOk) showStatus("This browser isn't saving your progress (private mode?). Open it in normal Safari or Chrome.", "bad");
 renderToday(); renderReading(); loadOrder(dayIndex(ORDERS.length)); renderProgress(); fillSettings(); route();
+if (!LOCAL.lastSync && (Object.keys(LOCAL.p||{}).length || Object.keys(LOCAL.logs||{}).length)) LOCAL.dirty = true;
 saveLocal(); renderSync(); if (LOCAL.dirty) setTimeout(syncNow, 3000);
 
 /* optional extras when opened inside Claude: new reading texts and a Claude voice */
