@@ -372,20 +372,34 @@ function pickVoice(){
 }
 try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch(e) {}
 let tts = null;
-function say(text, slow){
+/* Recorded clips (audio/<key>.m4a) play even when the iPhone is on silent; the phone's own voice is the fallback. */
+const player = new Audio();
+player.preload = "auto";
+function speakSynth(text, slow){
   try {
     if ("speechSynthesis" in window) {
-      speechSynthesis.cancel();
+      if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "zh-CN"; if (zhVoice) u.voice = zhVoice; u.rate = slow ? 0.6 : 0.9;
-      speechSynthesis.speak(u); return;
+      setTimeout(() => speechSynthesis.speak(u), 60); return;
     }
   } catch(e) {}
   if (tts) tts.speak(text, {language:"zh", rate: slow ? 0.7 : 1}).catch(()=>{});
 }
-const speakBtns = text => el("div",{class:"row",style:"justify-content:center"},
-  el("button",{class:"speak",type:"button",onclick:()=>say(text,true),"aria-label":"Play slowly"},"🔊 Slow"),
-  el("button",{class:"speak",type:"button",onclick:()=>say(text,false),"aria-label":"Play at normal speed"},"🔊 Normal"));
+function say(text, slow, key){
+  if (!key) return speakSynth(text, slow);
+  try {
+    player.pause();
+    player.src = "audio/" + key + ".m4a";
+    player.playbackRate = slow ? 0.7 : 1;
+    player.preservesPitch = true;
+    const p = player.play();
+    if (p && p.catch) p.catch(() => speakSynth(text, slow));
+  } catch(e) { speakSynth(text, slow); }
+}
+const speakBtns = (text, key) => el("div",{class:"row",style:"justify-content:center"},
+  el("button",{class:"speak",type:"button",onclick:()=>say(text,true,key),"aria-label":"Play slowly"},"🔊 Slow"),
+  el("button",{class:"speak",type:"button",onclick:()=>say(text,false,key),"aria-label":"Play at normal speed"},"🔊 Normal"));
 
 /* ---------- derived ---------- */
 function wordList(){ return [...S.words.values()]; }
@@ -520,7 +534,7 @@ function renderCard(){
   if (current.kind === "new" || revealed) {
     card.append(el("div",{class:"big",text:w.hz}), el("div",{class:"py",text:w.py}), el("div",{class:"en",text:w.en}));
     if (w.ex) card.append(el("p",{class:"note han",text:w.ex}));
-    card.append(speakBtns(w.hz), ladder);
+    card.append(speakBtns(w.hz, w.id), ladder);
   } else if (current.dir === "say") {
     card.append(el("div",{class:"prompt",text:"Say it in Chinese, out loud"}), el("div",{class:"en",style:"font-size:28px",text:w.en}));
   } else {
@@ -530,7 +544,7 @@ function renderCard(){
   if (current.kind === "new") {
     area.append(el("button",{class:"primary",type:"button",onclick:()=>grade(true),style:"width:100%"},"Got it · next"));
   } else if (!revealed) {
-    area.append(el("button",{class:"primary",type:"button",style:"width:100%",onclick:()=>{ revealed=true; renderCard(); say(w.hz,false); }},"Show answer"));
+    area.append(el("button",{class:"primary",type:"button",style:"width:100%",onclick:()=>{ revealed=true; renderCard(); say(w.hz,false,w.id); }},"Show answer"));
   } else if (current.relearn) {
     area.append(el("button",{class:"primary",type:"button",style:"width:100%",onclick:()=>grade(true)},"Next"));
   } else {
@@ -586,7 +600,7 @@ function renderReading(){
   if (showPy) p.append(el("div",{class:"passage-py",text:r.py}));
   if (showEn) p.append(el("div",{class:"note",text:r.en}));
   p.append(el("div",{class:"row"},
-    el("button",{type:"button",class:"speak",onclick:()=>say(r.zh,false)},"🔊 Listen"),
+    el("button",{type:"button",class:"speak",onclick:()=>say(r.zh,false,extraReading?null:"r"+rIdx)},"🔊 Listen"),
     el("button",{type:"button",class:"speak","aria-pressed":String(showPy),onclick:()=>{showPy=!showPy;renderReading();}}, showPy?"Hide pinyin":"Pinyin"),
     el("button",{type:"button",class:"speak","aria-pressed":String(showEn),onclick:()=>{showEn=!showEn;renderReading();}}, showEn?"Hide English":"English")));
   let answered = 0, correct = 0;
@@ -679,7 +693,7 @@ function renderOrder(){
     p.append(el("div",{class:"result","data-ok":checked.ok?"1":"0"},
       el("div",{text: checked.ok ? "✓ 对了！ Correct." : "✗ Not quite. The answer:"}),
       el("div",{class:"han",text:it.a[0]+"。"}), el("div",{text:it.py}), el("div",{class:"note",text:it.en})),
-      el("div",{class:"row"}, el("button",{type:"button",class:"speak",onclick:()=>say(it.a[0],false)},"🔊 Listen"),
+      el("div",{class:"row"}, el("button",{type:"button",class:"speak",onclick:()=>say(it.a[0],false,"o"+oIdx)},"🔊 Listen"),
         el("button",{type:"button",class:"primary",onclick:()=>loadOrder(oIdx+1)},"Next sentence"),
         (todayLog().order||0) >= 5 ? el("button",{type:"button",onclick:goNext},"Done for today") : null));
   } else {
