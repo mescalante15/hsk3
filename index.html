@@ -155,21 +155,97 @@ textarea{font:12px/1.4 ui-monospace,Menlo,monospace;width:100%;padding:10px;bord
 label.field{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
 input,select{font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);min-height:44px}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fields label:first-child{grid-column:1/-1}
+.fields label:first-child,.fields label:nth-child(2){grid-column:1/-1}
 
 /* Tab bar */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
   padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
-nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
 nav.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;text-decoration:none;color:var(--muted);font-size:11.5px;font-weight:600}
 nav.tabs a .han{font-size:19px;font-weight:700;line-height:1.2}
 nav.tabs a[aria-current="page"]{color:var(--jade)}
+
+/* Avatar + profile */
+.avatar{width:56px;height:56px;border-radius:50%;flex:none;background:var(--jade);color:var(--bg);display:grid;place-items:center;font-family:var(--f-han);font-size:24px;font-weight:700;overflow:hidden;border:2px solid var(--surface);box-shadow:0 0 0 2px var(--jade)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar.lg{width:84px;height:84px;font-size:34px}
+.profile{display:flex;gap:14px;align-items:center}
+.profile .who{display:flex;flex-direction:column;gap:2px;min-width:0}
+.profile .who b{font-family:var(--f-display);font-size:20px}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.levels div{border-radius:10px;padding:8px;background:var(--sunk);font-size:12px;text-align:center}
+.levels div b{display:block;font-family:var(--f-display);font-size:14px}
+.levels div[data-s="done"]{background:var(--jade-soft)}
+.levels div[data-s="now"]{background:var(--ochre-soft);box-shadow:inset 0 0 0 2px var(--ochre)}
+.meter{height:12px;background:var(--sunk);border-radius:6px;overflow:hidden;position:relative}
+.meter i{display:block;height:100%;background:var(--jade);border-radius:6px}
+.meter u{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--fg);text-decoration:none}
+.skill{display:grid;grid-template-columns:110px 1fr 44px;gap:10px;align-items:center;font-size:13.5px}
+.skill .meter{height:8px}
+.skill b{font-variant-numeric:tabular-nums;text-align:right}
+.bars14{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:110px}
+.bars14 .c{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:3px}
+.bars14 .c i{width:100%;border-radius:4px 4px 1px 1px;background:var(--jade);min-height:2px}
+.bars14 .c i.z{background:var(--sunk)}
+.bars14 .c span{font-size:10px;color:var(--muted)}
+.bars14 .c[data-today="1"] span{color:var(--fg);font-weight:700}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.badge[data-on="1"]{background:var(--ochre-soft);color:var(--ochre)}
+.wlist{display:flex;flex-direction:column}
+.wlist button{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:8px 2px;min-height:44px;font-weight:500}
+.wlist .han{font-size:19px;font-weight:700}
+.wlist small{color:var(--muted);font-size:12px}
+details.panel summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+details.panel summary::after{content:"＋";color:var(--muted)}
+details.panel[open] summary::after{content:"－"}
+
+/* Grammar */
+.frame{display:flex;flex-wrap:wrap;gap:6px}
+.frame .blk{display:flex;flex-direction:column;align-items:center;border-radius:10px;padding:6px 10px;min-width:54px}
+.frame .blk b{font-family:var(--f-han);font-size:19px}
+.frame .blk span{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;opacity:.8}
+.frame .blk:nth-child(5n+1){background:#DCEBF7;color:#1C4466}
+.frame .blk:nth-child(5n+2){background:var(--ochre-soft);color:var(--ochre)}
+.frame .blk:nth-child(5n+3){background:#EADFF5;color:#55327A}
+.frame .blk:nth-child(5n+4){background:var(--jade-soft);color:var(--jade)}
+.frame .blk:nth-child(5n+5){background:var(--red-soft);color:var(--red)}
+:root[data-theme="dark"] .frame .blk:nth-child(5n+1){background:#1C3041;color:#A9CDEB}
+:root[data-theme="dark"] .frame .blk:nth-child(5n+3){background:#33264A;color:#D2BBEE}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .frame .blk:nth-child(5n+1){background:#1C3041;color:#A9CDEB}
+:root:not([data-theme="light"]) .frame .blk:nth-child(5n+3){background:#33264A;color:#D2BBEE}}
+.tipbox{background:var(--sunk);border-radius:12px;padding:12px;font-size:14.5px}
+.exrow{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid var(--line)}
+.exrow .han{font-size:19px;font-weight:700}
+.exrow .py{color:var(--jade);font-size:14px}
+.glist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.glist button{width:100%;display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;text-align:left;font-weight:500}
+.glist .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--sunk);font-family:var(--f-display);font-size:13px}
+.glist [data-s="done"] .num{background:var(--jade);color:var(--bg)}
+.glist [data-s="next"] .num{background:var(--ochre);color:var(--bg)}
+.glist .gt{display:flex;flex-direction:column}
+.glist .gt b{font-weight:600}
+
+/* Mic */
+.mic{display:flex;flex-direction:column;gap:6px;align-items:stretch;width:100%}
+.mic .row{justify-content:center}
+button.rec{background:var(--red-soft);border-color:transparent}
+button.rec[data-on="1"]{background:var(--red);color:var(--bg);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.7}}
+.heard{border-radius:12px;padding:10px 12px;font-size:14px;text-align:left}
+.heard[data-ok="1"]{background:var(--jade-soft)}
+.heard[data-ok="0"]{background:var(--red-soft)}
+.heard[data-ok="2"]{background:var(--ochre-soft)}
+.heard .han{font-size:20px;font-weight:700;letter-spacing:.02em}
+.heard .han i{font-style:normal;color:var(--red);text-decoration:underline wavy}
+.seg.three{grid-template-columns:1fr 1fr 1fr}
+.seg.three button{font-size:13.5px;padding:6px 4px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
 <div class="wrap">
   <header class="top">
-    <div class="brand"><b>HSK 3 · 学习</b><span id="dateLine">Today</span></div>
+    <a href="#me" class="row" style="gap:10px;text-decoration:none;color:inherit;flex-wrap:nowrap;min-width:0"><span class="avatar" id="avTop" style="width:38px;height:38px;font-size:17px">玛</span><div class="brand"><b id="brandName">Mary · HSK 3</b><span id="dateLine">Today</span></div></a>
     <div class="count"><strong id="daysLeft">–</strong><small>days to exam</small></div>
   </header>
 
@@ -217,33 +293,76 @@ nav.tabs a[aria-current="page"]{color:var(--jade)}
       <div id="cardArea"></div>
     </section>
 
+    <!-- WARM-UP: yesterday's words -->
+    <section id="v-warm" class="stack" data-view hidden>
+      <div class="row" style="justify-content:space-between">
+        <h1>Warm-up <span class="han">复习</span></h1>
+        <span class="note" id="warmInfo"></span>
+      </div>
+      <div class="progressbar"><i id="wBar"></i></div>
+      <div id="warmArea" class="stack"></div>
+    </section>
+
+    <!-- GRAMMAR -->
+    <section id="v-grammar" class="stack" data-view hidden>
+      <div id="grammarArea" class="stack"></div>
+    </section>
+
     <!-- PRACTICE -->
     <section id="v-practice" class="stack" data-view hidden>
       <h1>Exam practice <span class="han">练习</span></h1>
-      <div class="seg" role="group" aria-label="Practice type">
+      <div class="seg three" role="group" aria-label="Practice type">
         <button id="segRead" aria-pressed="true">阅读 Reading</button>
-        <button id="segOrder" aria-pressed="false">排序 Word order</button>
+        <button id="segOrder" aria-pressed="false">排序 Order</button>
+        <button id="segSpeak" aria-pressed="false">口语 Speaking</button>
       </div>
       <div id="readArea" class="stack"></div>
       <div id="orderArea" class="stack" hidden></div>
+      <div id="speakArea" class="stack" hidden></div>
     </section>
 
-    <!-- PROGRESS -->
-    <section id="v-progress" class="stack" data-view hidden>
-      <h1>Progress <span class="han">进步</span></h1>
+    <!-- ME / PROGRESS -->
+    <section id="v-me" class="stack" data-view hidden>
       <div class="panel stack">
-        <div class="eyebrow">Words by Leitner box</div>
+        <div class="profile">
+          <button type="button" class="avatar lg" id="avBig" aria-label="Change your photo" style="padding:0;min-height:0">玛</button>
+          <div class="who"><b id="meName">Mary</b><span class="muted" id="meLine">Venezuelan in Shenzhen · 加油！</span><span class="note" id="meSince"></span></div>
+        </div>
+        <input type="file" id="photoIn" accept="image/*" hidden>
+        <div class="levels" id="levels"></div>
+      </div>
+      <div class="panel stack">
+        <div class="row" style="justify-content:space-between;align-items:baseline"><div class="eyebrow">Exam readiness</div><b id="readyPct" style="font-family:var(--f-display);font-size:26px;color:var(--jade)">0%</b></div>
+        <div class="meter"><i id="readyBar" style="width:0"></i><u id="readyMark" title="Where you should be today"></u></div>
+        <p class="note" style="margin:0" id="readyNote"></p>
+      </div>
+      <div class="panel stack">
+        <div class="eyebrow">Your skills · last 14 days</div>
+        <div class="stack" id="skills" style="gap:10px"></div>
+      </div>
+      <div class="panel stack">
+        <div class="eyebrow">Study time · last 14 days</div>
+        <div class="bars14" id="bars14"></div>
+        <p class="note" style="margin:0" id="daySummary"></p>
+      </div>
+      <div class="panel stack">
+        <div class="eyebrow">Badges</div>
+        <div class="badges" id="badges"></div>
+      </div>
+      <div class="panel stack">
+        <div class="eyebrow">Words to watch</div>
+        <div class="wlist" id="weakList"></div>
+      </div>
+      <div class="panel stack">
+        <div class="eyebrow">Words by stage</div>
         <div class="boxes" id="boxChart"></div>
         <p class="note" style="margin:0">New → box 1 (1 day) → 2 (2 days) → 3 (4 days) → 4 (8 days) → 5 (16 days) → known. A miss sends a word back to box 1.</p>
       </div>
-      <div class="panel stack">
-        <div class="eyebrow">Last 14 days</div>
-        <div class="days" id="dayDots"></div>
-        <p class="note" style="margin:0" id="daySummary"></p>
-      </div>
+      <details class="panel stack" id="allWords"><summary>All my words</summary><div class="wlist" id="allList" style="margin-top:10px"></div></details>
       <form class="panel stack" id="settingsForm">
         <div class="eyebrow">Settings</div>
         <div class="fields">
+          <label class="field" for="myName">Your name<input type="text" id="myName" autocomplete="given-name"></label>
           <label class="field" for="examDate">Exam date (target)<input type="date" id="examDate"></label>
           <label class="field" for="dailyNew">New words a day<select id="dailyNew"><option>5</option><option>8</option><option>10</option><option>12</option><option>15</option></select></label>
           <label class="field" for="reviewCap">Max reviews a day<select id="reviewCap"><option>15</option><option>20</option><option>30</option><option>40</option><option>60</option></select></label>
@@ -265,8 +384,9 @@ nav.tabs a[aria-current="page"]{color:var(--jade)}
   <div class="in">
     <a href="#today" data-tab="today"><span class="han">今天</span>Today</a>
     <a href="#cards" data-tab="cards"><span class="han">词语</span>Words</a>
+    <a href="#grammar" data-tab="grammar"><span class="han">语法</span>Grammar</a>
     <a href="#practice" data-tab="practice"><span class="han">练习</span>Practice</a>
-    <a href="#progress" data-tab="progress"><span class="han">进步</span>Progress</a>
+    <a href="#me" data-tab="me"><span class="han">我</span>Me</a>
   </div>
 </nav>
 
@@ -313,7 +433,8 @@ function loadState(){
   S.loaded = true;
 }
 function saveWord(id, patch){ LOCAL.p[id] = {...(LOCAL.p[id]||{}), ...patch}; markDirty(); saveLocal(); }
-function todayLog(){ return {date:T(), reviewed:0, right:0, newLearned:0, reading:0, order:0, speak:false, ...(S.logs.get(T())||{})}; }
+const LOG0 = {reviewed:0, right:0, newLearned:0, reading:0, readingQ:0, readingOk:0, order:0, orderN:0, orderOk:0, speak:0, speakN:0, speakOk:0, speakS:0, grammar:0, warm:0, warmOk:0};
+function todayLog(){ const x = {date:T(), ...LOG0, ...(S.logs.get(T())||{})}; if (typeof x.speak === "boolean") x.speak = x.speak ? 1 : 0; return x; }
 function bumpLog(patch){
   const cur = todayLog();
   for (const [k,v] of Object.entries(patch)) cur[k] = (typeof v === "number") ? (cur[k]||0) + v : v;
@@ -325,8 +446,12 @@ function progressCode(){
   const w = {};
   for (const x of S.words.values()) if (x.box) w[x.id] = [x.box, x.due||"", x.right||0, x.wrong||0];
   const l = {};
-  for (let i=0;i<14;i++){ const d = addDays(T(),-i), x = S.logs.get(d); if (x) l[d] = [x.reviewed||0, x.right||0, x.newLearned||0, x.reading||0, x.order||0, x.speak?1:0]; }
-  return "HSK3:" + JSON.stringify({v:1, d:T(), exam:S.settings.examDate, w, l});
+  /* l[day] = [reviewed,right,new,reading,order,speak,grammar,warm,warmOk,orderOk,readingQ,readingOk,speakOk,speakS,orderN,speakN] */
+  for (let i=0;i<14;i++){ const d = addDays(T(),-i), x = S.logs.get(d); if (x) l[d] = [x.reviewed||0, x.right||0, x.newLearned||0, x.reading||0, x.order||0, +x.speak||0, x.grammar||0, x.warm||0, x.warmOk||0, x.orderOk||0, x.readingQ||0, x.readingOk||0, x.speakOk||0, x.speakS||0, x.orderN||0, x.speakN||0]; }
+  const g = {}; for (const [k,v] of Object.entries(LOCAL.g||{})) g[k] = [v.best||0, v.n||0, v.last||""];
+  const pr = Object.entries(LOCAL.pr||{}).filter(([,v])=>v[0]>v[1]).sort((a,b)=>(b[1][0]-b[1][1])-(a[1][0]-a[1][1])).slice(0,15).map(([k,v])=>[k,v[0],v[1]]);
+  const om = Object.entries(LOCAL.om||{}).filter(([,v])=>v>0).map(([k,v])=>[k,v]);
+  return "HSK3:" + JSON.stringify({v:2, d:T(), exam:S.settings.examDate, name:myName(), w, l, g, pr, om});
 }
 /* auto-sync: sends the same progress code to Laoshi's private table (add-only; nothing can be read back from here) */
 const SYNC_URL = "https://flisesbklxtppppmacfr.supabase.co/rest/v1/hsk3_progress";
@@ -336,7 +461,7 @@ let syncTimer = null, syncing = false;
 function markDirty(){ LOCAL.dirty = true; clearTimeout(syncTimer); syncTimer = setTimeout(syncNow, 20000); }
 async function syncNow(){
   clearTimeout(syncTimer);
-  if (!LOCAL.dirty || syncing) return;
+  if (!LOCAL.dirty || syncing || location.hostname === "localhost") return; /* local tests never sync */
   if (navigator.onLine === false) { renderSync(); return; }
   syncing = true;
   try {
@@ -407,7 +532,7 @@ function dueWords(){ const d = T(); return wordList().filter(w => w.box>=1 && w.
 function newWords(){ return wordList().filter(w => !w.box).sort((a,b)=>(a.order||0)-(b.order||0)); }
 function streak(){
   let n = 0, d = T();
-  const active = x => x && ((x.reviewed||0) + (x.newLearned||0) + (x.reading||0) + (x.order||0) > 0 || x.speak);
+  const active = x => x && ((x.reviewed||0) + (x.newLearned||0) + (x.reading||0) + (x.order||0) + (x.grammar||0) + (x.warm||0) + (+x.speak||0) > 0);
   if (!active(S.logs.get(d))) d = addDays(d,-1);
   while (active(S.logs.get(d))) { n++; d = addDays(d,-1); }
   return n;
@@ -416,13 +541,14 @@ function streak(){
 /* ---------- TODAY ---------- */
 let TASKS = [];
 function openTask(t){
-  if (t.toggle) { location.hash = "#progress"; copyProgress($("#exportNote")); return; }
   if (t.seg) setSeg(t.seg);
+  if (t.k === "grammar") { const g = nextLesson(); gView = {id:g.id, step:"learn"}; renderGrammar(); }
+  if (t.k === "warm") buildWarm();
   if (t.go === "#cards" && !current) { sessionBuilt = false; pendingFree = !!t.done; }
   if (location.hash === t.go) route(); else location.hash = t.go;
 }
 function goNext(){
-  const t = TASKS.find(x=>!x.done && !x.toggle) || TASKS.find(x=>!x.done);
+  const t = TASKS.find(x=>!x.done);
   if (t) openTask(t); else { setSeg("read"); location.hash = "#practice"; }
 }
 document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#continueBtn")) goNext(); });
@@ -438,27 +564,25 @@ function renderToday(){
   const lg = todayLog(), due = dueWords(), nw = newWords();
   const reviewTarget = Math.min(S.settings.reviewCap, due.length + (lg.reviewed||0));
   const newTarget = Math.min(S.settings.dailyNew, nw.length + (lg.newLearned||0));
+  const ww = warmWords(), ld = lastStudyDay(), ng = nextLesson();
   const tasks = [
+    {k:"warm", title:"Warm-up · yesterday's words", sub: ww.length ? `${Math.min(lg.warm,ww.length)} / ${ww.length} words from ${niceDay(ld)}` : "No new words last time",
+      done: !ww.length || lg.warm >= ww.length, go:"#warm"},
     {k:"review", title:"Review words", sub: S.loaded ? (due.length && (lg.reviewed||0) < reviewTarget ? `${reviewTarget-(lg.reviewed||0)} to go · ${lg.reviewed||0} done` : `${lg.reviewed||0} reviewed today`) : "Loading…",
       done: S.loaded && (due.length===0 || (lg.reviewed||0) >= reviewTarget), go:"#cards"},
     {k:"new", title:"Learn new words", sub: S.loaded ? `${lg.newLearned||0} / ${newTarget} new` : "Loading…",
       done: S.loaded && (lg.newLearned||0) >= newTarget, go:"#cards"},
-    {k:"reading", title:"Reading · 阅读", sub:"1 short text, HSK style", done:(lg.reading||0)>=1, go:"#practice", seg:"read"},
+    {k:"grammar", title:"Grammar · 语法", sub: lg.grammar ? `${lg.grammar} lesson${lg.grammar>1?"s":""} done today` : `Lesson ${GRAMMAR.indexOf(ng)+1}: ${ng.title}`, done: lg.grammar >= 1, go:"#grammar"},
     {k:"order", title:"Sentence order · 排序", sub:`${Math.min(lg.order||0,5)} / 5 sentences`, done:(lg.order||0)>=5, go:"#practice", seg:"order"},
-    {k:"speak", title:"Speaking with Laoshi", sub:"Copy your code, paste it in the Laoshi chat, then tap the circle when done.", done:!!lg.speak, toggle:true}
+    {k:"reading", title:"Reading · 阅读", sub:"1 short text, HSK style", done:(lg.reading||0)>=1, go:"#practice", seg:"read"},
+    {k:"speak", title:"Speaking · 口语", sub:`${Math.min(lg.speakS,5)} / 5 sentences out loud`, done: lg.speakS >= 5, go:"#practice", seg:"speak"}
   ];
   TASKS = tasks;
   const ul = $("#taskList"); ul.replaceChildren();
   for (const t of tasks) {
-    const action = t.toggle
-      ? el("button",{type:"button",onclick:()=>{ location.hash="#progress"; copyProgress($("#exportNote")); }}, "Copy code")
-      : el("button",{type:"button",class: t.done ? "ghost" : "primary",onclick:()=>openTask(t)}, t.done ? "Again" : "Start");
-    const tick = t.toggle
-      ? el("button",{type:"button",class:"tick btn-tick","aria-label": lg.speak ? "Mark speaking lesson not done" : "Mark speaking lesson done",onclick:()=>bumpLog({speak:!lg.speak})}, t.done ? "✓" : "")
-      : el("span",{class:"tick","aria-hidden":"true"}, t.done ? "✓" : "");
-    ul.append(el("li",{class:"task","data-done":t.done?"1":"0"}, tick,
+    ul.append(el("li",{class:"task","data-done":t.done?"1":"0"}, el("span",{class:"tick","aria-hidden":"true"}, t.done ? "✓" : ""),
       el("div",{}, el("div",{class:"t-title",text:t.title}), el("div",{class:"t-sub",text:t.sub})),
-      action));
+      el("button",{type:"button",class: t.done ? "ghost" : "primary",onclick:()=>openTask(t)}, t.done ? "Again" : "Start")));
   }
   const n = tasks.filter(t=>t.done).length, all = n === tasks.length;
   $("#ringNum").textContent = `${n}/${tasks.length}`;
@@ -468,8 +592,12 @@ function renderToday(){
   const next = tasks.find(t=>!t.done);
   const cb = $("#continueBtn");
   cb.textContent = all ? "Practise more" : n === 0 ? "Start today's lesson" : "Continue · " + next.title;
-  $("#greet").textContent = all ? "太棒了，Mary！" : "你好，Mary！";
-  $("#greetEn").textContent = all ? "tài bàng le · Amazing! Everything for today is done." : "Here is today's plan. About 30 minutes.";
+  const hr = +new Intl.DateTimeFormat("en-GB",{timeZone:TZ,hour:"numeric",hourCycle:"h23"}).format(new Date());
+  const hi = hr < 12 ? ["早上好","zǎoshang hǎo"] : hr < 18 ? ["下午好","xiàwǔ hǎo"] : ["晚上好","wǎnshang hǎo"];
+  const left = diffDays(T(), S.settings.examDate || DEFAULTS.examDate);
+  $("#greet").textContent = all ? `太棒了，${myName()}！` : `${hi[0]}，${myName()}！`;
+  $("#greetEn").textContent = all ? "tài bàng le · Amazing! Everything for today is done." : `${hi[1]} · ${left > 0 ? left + " days to the exam. " : ""}Today's plan, about 30 minutes.`;
+  renderAvatars();
   const ws = wordList();
   $("#sKnown").textContent = ws.filter(w=>w.box===6).length;
   $("#sReview").textContent = ws.filter(w=>w.box>=1&&w.box<=5).length;
@@ -490,6 +618,16 @@ function buildQueue(extra){
   queue = [...due.map(w=>({id:w.id,kind:"review",dir:Math.random()<.5?"read":"say"})), ...nw.map(w=>({id:w.id,kind:"new"}))];
   qDone = 0; qTotal = queue.length; sessionBuilt = true; nextCard();
 }
+/* one review result: right moves a word up a box, a miss sends it back to box 1 */
+function srsGrade(w, ok){
+  const d = T();
+  const nb = (w.box||1) + 1;
+  const patch = ok
+    ? (nb >= 6 ? {box:6, due:null, last:d, right:(w.right||0)+1, miss:0} : {box:nb, due:addDays(d, INTERVAL[nb]), last:d, right:(w.right||0)+1, miss:0})
+    : {box:1, due:addDays(d,1), last:d, wrong:(w.wrong||0)+1, miss:(w.miss||0)+1};
+  S.words.set(w.id, {...w, ...patch}); saveWord(w.id, patch);
+  bumpLog(ok ? {reviewed:1, right:1} : {reviewed:1});
+}
 /* free practice: replay learned words with audio; never changes boxes or dates */
 let pendingFree = false;
 function buildFree(){
@@ -508,14 +646,10 @@ function grade(ok){
     bumpLog({newLearned:1});
   } else if (current.relearn) {
     return (qDone++, nextCard());
-  } else if (ok) {
-    const nb = (w.box||1) + 1;
-    patch = nb >= 6 ? {box:6, due:null, last:d, right:(w.right||0)+1, miss:0} : {box:nb, due:addDays(d, INTERVAL[nb]), last:d, right:(w.right||0)+1, miss:0};
-    bumpLog({reviewed:1, right:1});
   } else {
-    patch = {box:1, due:addDays(d,1), last:d, wrong:(w.wrong||0)+1, miss:(w.miss||0)+1};
-    bumpLog({reviewed:1});
-    queue.push({id:w.id, kind:"review", dir:"read", relearn:true}); qTotal++;
+    srsGrade(w, ok);
+    if (!ok) { queue.push({id:w.id, kind:"review", dir:"read", relearn:true}); qTotal++; }
+    qDone++; return nextCard();
   }
   S.words.set(w.id, {...w, ...patch});
   saveWord(w.id, patch);
@@ -550,7 +684,9 @@ function renderCard(){
   if (current.kind === "new" || revealed) {
     card.append(el("div",{class:"big",text:w.hz}), el("div",{class:"py",text:w.py}), el("div",{class:"en",text:w.en}));
     if (w.ex) card.append(el("p",{class:"note han",text:w.ex}));
-    card.append(speakBtns(w.hz, w.id), ladder);
+    card.append(speakBtns(w.hz, w.id));
+    if (micable(w.hz)) card.append(micBox(w.hz, w.id));
+    card.append(ladder);
   } else if (current.dir === "say") {
     card.append(el("div",{class:"prompt",text:"Say it in Chinese, out loud"}), el("div",{class:"en",style:"font-size:28px",text:w.en}));
   } else {
@@ -632,7 +768,7 @@ function renderReading(){
         b.dataset.state = oi===q.a ? "right" : "wrong";
         if (oi===q.a) correct++; else opts.children[q.a].dataset.state = "right";
         if (answered === r.qs.length) {
-          bumpLog({reading:1});
+          bumpLog({reading:1, readingQ:r.qs.length, readingOk:correct});
           area.append(el("div",{class:"result","data-ok": correct===r.qs.length?"1":"0"},
             el("div",{text:`${correct} / ${r.qs.length} correct. ${correct===r.qs.length?"很好！":"Read it again with pinyin on, then try the next text."}`})),
             el("button",{class:"primary big",type:"button",onclick:goNext},"Continue"));
@@ -688,50 +824,496 @@ const ORDERS = [
  {t:["因为下雨了","我们","所以","不去了"], a:["因为下雨了所以我们不去了"], py:"Yīnwèi xià yǔ le, suǒyǐ wǒmen bú qù le.", en:"Because it's raining, we're not going."},
  {t:["有点儿","这件衣服","贵"], a:["这件衣服有点儿贵"], py:"Zhè jiàn yīfu yǒudiǎnr guì.", en:"This piece of clothing is a bit expensive."}
 ];
-let oIdx = 0, picked = [], checked = null, shuffled = [];
+/* which grammar lesson explains each built-in order sentence (for the hint) */
+const OMAP = ["g4","g7","g1","g3","g13","g15","g14","g5","g6","g1","g15","g3","g7","g9","g10","g2"];
 function shuffle(n){ const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-function loadOrder(i){ oIdx = i % ORDERS.length; picked = []; checked = null; const it = ORDERS[oIdx]; do { shuffled = shuffle(it.t.length); } while (it.t.length>1 && it.a.includes(shuffled.map(k=>it.t[k]).join(""))); renderOrder(); }
+/* a tap-the-tiles sentence builder; used by Practice and by grammar lessons */
+function orderWidget(it, o){
+  const box = el("div",{class:"stack"});
+  let picked = [], checked = null, sh, tries = 0;
+  do { sh = shuffle(it.t.length); tries++; } while (tries < 30 && it.t.length > 1 && it.a.some(a => strip(a) === strip(sh.map(k=>it.t[k]).join(""))));
+  let hint = false;
+  function draw(){
+    box.replaceChildren();
+    const slot = el("div",{class:"slot","aria-label":"Your sentence"});
+    if (!picked.length) slot.append(el("span",{class:"note",text:"Tap the words below…"}));
+    picked.forEach((k,pi) => slot.append(el("button",{type:"button",class:"tile han",disabled:!!checked,onclick:()=>{ picked.splice(pi,1); draw(); }}, it.t[k])));
+    const tiles = el("div",{class:"tiles"});
+    sh.forEach(k => tiles.append(el("button",{type:"button",class:"tile han"+(picked.includes(k)?" used":""),disabled:!!checked||picked.includes(k),onclick:()=>{ picked.push(k); draw(); }}, it.t[k])));
+    box.append(el("p",{class:"note",style:"margin:0",text:"Meaning: " + it.en}), slot, tiles);
+    const g = it.g && GRAMMAR.find(x => x.id === it.g);
+    if (hint && g) box.append(el("div",{class:"tipbox stack",style:"gap:8px"}, frameEl(g), el("div",{text:g.tip})));
+    if (checked) {
+      box.append(el("div",{class:"result","data-ok":checked.ok?"1":"0"},
+        el("div",{text: checked.ok ? "✓ 对了！ Correct." : "✗ Not quite. The answer:"}),
+        el("div",{class:"han",text:it.a[0]+"。"}), el("div",{text:it.py}), el("div",{class:"note",text:it.en}),
+        !checked.ok && g ? el("div",{class:"note",text:`The rule: lesson ${GRAMMAR.indexOf(g)+1}, ${g.title}.`}) : null),
+        el("div",{class:"row"}, el("button",{type:"button",class:"speak",onclick:()=>say(it.a[0],false,it.key)},"🔊 Listen"),
+          o.onNext ? el("button",{type:"button",class:"primary",onclick:o.onNext}, o.nextLabel || "Next sentence") : null, o.extra ? o.extra() : null),
+        micBox(it.a[0], it.key));
+    } else {
+      box.append(el("div",{class:"row"},
+        el("button",{type:"button",class:"primary",disabled:picked.length!==it.t.length,onclick:()=>{
+          const s2 = strip(picked.map(k=>it.t[k]).join(""));
+          checked = {ok: it.a.some(a=>strip(a)===s2)}; if (o.onCheck) o.onCheck(checked.ok); draw(); }},"Check"),
+        el("button",{type:"button",onclick:()=>{ picked=[]; draw(); }},"Clear"),
+        g ? el("button",{type:"button",class:"ghost","aria-pressed":String(hint),onclick:()=>{ hint=!hint; draw(); }}, hint ? "Hide hint" : "💡 Hint") : null));
+    }
+  }
+  draw(); return box;
+}
+let oPool = [], oPos = 0;
+function grammarOrders(){
+  const out = [];
+  for (const g of GRAMMAR) if ((LOCAL.g||{})[g.id]) g.drill.forEach(d => { if (d.k === "order") out.push({...d, g:g.id}); });
+  return out;
+}
+function buildOrderPool(){
+  const om = LOCAL.om || {};
+  const all = [...grammarOrders(), ...ORDERS.map((it,i)=>({...it, key:"o"+i, g:OMAP[i]}))];
+  const r = new Map(all.map(x => [x.key, Math.random()]));
+  all.sort((a,b) => (om[b.key]||0) - (om[a.key]||0) || r.get(a.key) - r.get(b.key));
+  oPool = all; oPos = 0;
+}
+function missOrder(key, ok){
+  LOCAL.om = LOCAL.om || {};
+  if (!ok) LOCAL.om[key] = (LOCAL.om[key]||0) + 1;
+  else if (LOCAL.om[key]) LOCAL.om[key]--;
+}
 function renderOrder(){
   const area = $("#orderArea"); area.replaceChildren();
-  const it = ORDERS[oIdx];
-  const p = el("div",{class:"panel stack"},
+  if (!oPool.length) buildOrderPool();
+  const it = oPool[oPos % oPool.length];
+  const missed = (LOCAL.om||{})[it.key];
+  area.append(el("div",{class:"panel stack"},
     el("div",{class:"row",style:"justify-content:space-between"},
       el("h2",{text:"Put the words in order"}),
-      el("span",{class:"note",text:`${oIdx+1} / ${ORDERS.length}`})),
-    el("p",{class:"note",style:"margin:0",text:"HSK 3 writing, part 1: tap the pieces to build the sentence."}));
-  const slot = el("div",{class:"slot","aria-label":"Your sentence"});
-  if (!picked.length) slot.append(el("span",{class:"note",text:"Tap the words below…"}));
-  picked.forEach((k,pi) => slot.append(el("button",{type:"button",class:"tile han",disabled:!!checked,onclick:()=>{ picked.splice(pi,1); renderOrder(); }}, it.t[k])));
-  const tiles = el("div",{class:"tiles"});
-  shuffled.forEach(k => tiles.append(el("button",{type:"button",class:"tile han"+(picked.includes(k)?" used":""),disabled:!!checked||picked.includes(k),onclick:()=>{ picked.push(k); renderOrder(); }}, it.t[k])));
-  p.append(slot, tiles);
-  if (checked) {
-    p.append(el("div",{class:"result","data-ok":checked.ok?"1":"0"},
-      el("div",{text: checked.ok ? "✓ 对了！ Correct." : "✗ Not quite. The answer:"}),
-      el("div",{class:"han",text:it.a[0]+"。"}), el("div",{text:it.py}), el("div",{class:"note",text:it.en})),
-      el("div",{class:"row"}, el("button",{type:"button",class:"speak",onclick:()=>say(it.a[0],false,"o"+oIdx)},"🔊 Listen"),
-        el("button",{type:"button",class:"primary",onclick:()=>loadOrder(oIdx+1)},"Next sentence"),
-        (todayLog().order||0) >= 5 ? el("button",{type:"button",onclick:goNext},"Done for today") : null));
-  } else {
-    p.append(el("div",{class:"row"},
-      el("button",{type:"button",class:"primary",disabled:picked.length!==it.t.length,onclick:()=>{
-        const s = strip(picked.map(k=>it.t[k]).join(""));
-        checked = {ok: it.a.some(a=>strip(a)===s)}; bumpLog({order:1}); renderOrder(); }},"Check"),
-      el("button",{type:"button",onclick:()=>{ picked=[]; renderOrder(); }},"Clear")));
-  }
-  area.append(p);
+      el("span",{class:"note",text:`${Math.min(todayLog().order,99)} done today`})),
+    el("p",{class:"note",style:"margin:0",text: missed ? "You missed this one before. Take your time." : "HSK 3 writing, part 1: tap the pieces to build the sentence."}),
+    orderWidget(it, {onCheck: ok => { missOrder(it.key, ok); bumpLog({order:1, orderN:1, orderOk: ok?1:0}); },
+      onNext: () => { oPos++; renderOrder(); },
+      extra: () => todayLog().order >= 5 ? el("button",{type:"button",onclick:goNext},"Done for today") : null})));
 }
 function setSeg(which){
-  $("#segRead").setAttribute("aria-pressed", String(which==="read"));
-  $("#segOrder").setAttribute("aria-pressed", String(which==="order"));
-  $("#readArea").hidden = which!=="read"; $("#orderArea").hidden = which!=="order";
+  for (const [b,a,k] of [["#segRead","#readArea","read"],["#segOrder","#orderArea","order"],["#segSpeak","#speakArea","speak"]]) {
+    $(b).setAttribute("aria-pressed", String(which===k)); $(a).hidden = which!==k;
+  }
+  if (which === "speak") renderSpeak();
 }
 $("#segRead").addEventListener("click",()=>setSeg("read"));
 $("#segOrder").addEventListener("click",()=>setSeg("order"));
+$("#segSpeak").addEventListener("click",()=>setSeg("speak"));
 
-/* ---------- PROGRESS ---------- */
+/* ---------- profile ---------- */
+const PHOTO_KEY = "mary-hsk3-photo";
+function myName(){ return ((LOCAL.profile||{}).name || "Mary").trim() || "Mary"; }
+function initial(){ const n = myName(); return n === "Mary" ? "玛" : n.slice(0,1).toUpperCase(); }
+function photo(){ try { return localStorage.getItem(PHOTO_KEY); } catch(e) { return null; } }
+function renderAvatars(){
+  const ph = photo();
+  for (const id of ["#avTop","#avBig"]) { const a = $(id); if (!a) continue; a.replaceChildren(ph ? el("img",{src:ph,alt:""}) : initial()); }
+  const bn = $("#brandName"); if (bn) bn.textContent = myName() + " · HSK 3";
+}
+$("#avBig").addEventListener("click", () => $("#photoIn").click());
+$("#photoIn").addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  const img = new Image(), url = URL.createObjectURL(f);
+  img.onload = () => {
+    const n = 192, c = document.createElement("canvas"); c.width = c.height = n;
+    const m = Math.min(img.width, img.height);
+    c.getContext("2d").drawImage(img, (img.width-m)/2, (img.height-m)/2, m, m, 0, 0, n, n);
+    try { localStorage.setItem(PHOTO_KEY, c.toDataURL("image/jpeg", .82)); } catch(err) {}
+    URL.revokeObjectURL(url); renderAvatars();
+  };
+  img.src = url;
+});
+function niceDay(d){ if (!d) return ""; const n = diffDays(d, T()); if (n === 1) return "yesterday"; return new Intl.DateTimeFormat("en-GB",{weekday:"long",timeZone:"UTC"}).format(new Date(d+"T12:00:00Z")); }
+
+/* ---------- speaking check: phone speech recognition, or record and compare ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+const CANREC = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+const DIG = {"0":"零","1":"一","2":"二","3":"三","4":"四","5":"五","6":"六","7":"七","8":"八","9":"九"};
+const norm = s => strip(s).replace(/[0-9]/g, d => DIG[d]).replace(/两/g,"二").replace(/[她它]/g,"他").replace(/[得地]/g,"的").replace(/嘛/g,"吗").toLowerCase();
+const PYMAP = new Map(WORDS.map(w => [norm(w.hz), w.py.toLowerCase()]));
+const micable = hz => !/[\/–]/.test(hz) && strip(hz).length > 0;
+function lcsMark(a, b){
+  const n = a.length, m = b.length, dp = Array.from({length:n+1}, () => new Array(m+1).fill(0));
+  for (let i=n-1;i>=0;i--) for (let j=m-1;j>=0;j--) dp[i][j] = a[i]===b[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+  const ok = new Array(n).fill(false); let i=0, j=0;
+  while (i<n && j<m) { if (a[i]===b[j]) { ok[i]=true; i++; j++; } else if (dp[i+1][j] >= dp[i][j+1]) i++; else j++; }
+  return ok;
+}
+function judge(target, alts){
+  const t = [...norm(target)];
+  let best = {score:-1};
+  for (const h of alts) {
+    const hn = [...norm(h)], ok = lcsMark(t, hn), hit = ok.filter(Boolean).length;
+    let score = (t.length + hn.length) ? 2*hit/(t.length+hn.length) : 0, same = false;
+    if (score < 1 && PYMAP.get(t.join("")) && PYMAP.get(t.join("")) === PYMAP.get(hn.join(""))) { score = 1; same = true; ok.fill(true); }
+    if (score > best.score) best = {score, ok, heard:h, same};
+  }
+  return best;
+}
+function trackPron(text, ok){
+  LOCAL.pr = LOCAL.pr || {};
+  const k = strip(text), v = LOCAL.pr[k] || [0,0,""];
+  LOCAL.pr[k] = [v[0]+1, v[1]+(ok?1:0), T()];
+  const keys = Object.keys(LOCAL.pr);
+  if (keys.length > 200) keys.sort((a,b)=>LOCAL.pr[a][2]<LOCAL.pr[b][2]?-1:1).slice(0, keys.length-200).forEach(x => delete LOCAL.pr[x]);
+}
+let activeRec = null, mediaRec = null;
+function micBox(target, key, onTry){
+  const out = el("div",{role:"status"});
+  const wrap = el("div",{class:"mic"});
+  const btns = el("div",{class:"row"});
+  if (SR) {
+    const b = el("button",{type:"button",class:"rec speak"},"🎤 Check my pronunciation");
+    b.addEventListener("click", () => listen(target, out, b, onTry));
+    btns.append(b);
+  }
+  if (CANREC) {
+    const r = el("button",{type:"button",class:"speak"},"⏺ Record & compare");
+    r.addEventListener("click", () => recordCompare(target, key, out, r, onTry));
+    btns.append(r);
+  }
+  if (!SR && !CANREC) out.append(el("p",{class:"note",text:"This browser can't use the microphone. Say it out loud after the audio."}));
+  wrap.append(btns, out);
+  return wrap;
+}
+function showHeard(out, target, best){
+  const ok = best.score >= 0.99 ? 1 : best.score >= 0.6 ? 2 : 0;
+  const chars = el("div",{class:"han"});
+  let k = 0;
+  for (const ch of target) {
+    if (!strip(ch)) { chars.append(ch); continue; }
+    chars.append(best.ok[k++] ? ch : el("i",{text:ch}));
+  }
+  out.replaceChildren(el("div",{class:"heard","data-ok":String(ok)},
+    el("div",{text: ok===1 ? (best.same ? "✓ 很好！ Same sound. (It wrote it with other characters.)" : "✓ 很好！ Clear: a Chinese ear understands you.") : ok===2 ? "Close! The wavy part wasn't clear. Listen slowly and try again." : "Not clear yet. Tap 🔊 Slow, copy the tones, then try again."}),
+    chars,
+    el("div",{class:"note",text:"It heard: " + (best.heard || "…")})));
+  return ok === 1;
+}
+function listen(target, out, btn, onTry){
+  if (activeRec) { try { activeRec.stop(); } catch(e) {} return; }
+  try { player.pause(); speechSynthesis && speechSynthesis.cancel(); } catch(e) {}
+  const r = new SR();
+  r.lang = "zh-CN"; r.interimResults = false; r.maxAlternatives = 5; r.continuous = false;
+  let got = false, err = "";
+  r.onresult = e => {
+    got = true;
+    const alts = [...e.results[0]].map(a => a.transcript);
+    const best = judge(target, alts), good = showHeard(out, target, best);
+    trackPron(target, good); bumpLog({speak:1, speakN:1, speakOk: good?1:0});
+    if (onTry) onTry(good);
+  };
+  r.onerror = e => {
+    err = e.error;
+    const msg = (err === "not-allowed" || err === "service-not-allowed")
+      ? "The phone blocked the microphone. On iPhone: Settings → Safari → Microphone → Allow, and Settings → General → Keyboard → Enable Dictation. Or use ⏺ Record & compare."
+      : err === "no-speech" ? "I didn't hear anything. Tap, wait for the red button, then speak."
+      : err === "network" ? "The pronunciation check needs internet. Use ⏺ Record & compare offline."
+      : err === "aborted" ? "" : "That didn't work (" + err + "). Try again, or use ⏺ Record & compare.";
+    if (msg) out.replaceChildren(el("p",{class:"note",text:msg}));
+  };
+  r.onend = () => { activeRec = null; btn.dataset.on = "0"; btn.textContent = "🎤 Check my pronunciation"; if (!got && !err) out.replaceChildren(el("p",{class:"note",text:"I didn't catch it. Tap and speak a bit louder."})); };
+  try { r.start(); activeRec = r; btn.dataset.on = "1"; btn.textContent = "● Listening… say it now"; out.replaceChildren(); }
+  catch(e) { out.replaceChildren(el("p",{class:"note",text:"The microphone didn't start. Try again in a second."})); }
+}
+async function recordCompare(target, key, out, btn, onTry){
+  if (mediaRec) { mediaRec.stop(); return; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch(e) { out.replaceChildren(el("p",{class:"note",text:"The phone blocked the microphone. Allow it for this site in Settings, then try again."})); return; }
+  const chunks = [], rec = new MediaRecorder(stream);
+  mediaRec = rec;
+  rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  rec.onstop = () => {
+    stream.getTracks().forEach(t => t.stop()); clearTimeout(rec._t); mediaRec = null;
+    btn.dataset.on = "0"; btn.textContent = "⏺ Record & compare";
+    const url = URL.createObjectURL(new Blob(chunks, {type: rec.mimeType || "audio/mp4"}));
+    const mine = new Audio(url);
+    const playBoth = () => { mine.currentTime = 0; mine.onended = () => setTimeout(() => say(target, false, key), 300); mine.play().catch(()=>{}); };
+    out.replaceChildren(el("div",{class:"heard","data-ok":"2"},
+      el("div",{text:"Listen: you first, then the model. Same melody? Then you've got it."}),
+      el("div",{class:"row"}, el("button",{type:"button",class:"speak",onclick:playBoth},"▶ Me + model"),
+        el("button",{type:"button",class:"speak",onclick:()=>{ mine.onended=null; mine.currentTime=0; mine.play().catch(()=>{}); }},"▶ Just me"))));
+    bumpLog({speak:1}); if (onTry) onTry(null);
+    playBoth();
+  };
+  rec.start(); btn.dataset.on = "1"; btn.textContent = "■ Stop";
+  rec._t = setTimeout(() => { if (rec.state === "recording") rec.stop(); }, 8000);
+}
+
+/* ---------- WARM-UP: the words from your last session ---------- */
+function lastStudyDay(){ const d = T(); return [...S.logs.keys()].filter(k => k < d && (S.logs.get(k).newLearned||0) > 0).sort().pop() || null; }
+function warmWords(){
+  const ld = lastStudyDay(); if (!ld) return [];
+  let ws = wordList().filter(w => w.learned === ld);
+  if (!ws.length) ws = wordList().filter(w => w.box >= 1 && w.last === ld);
+  return ws.sort((a,b) => (a.order||0) - (b.order||0));
+}
+let wq = [], wi = 0, wRight = 0, wAns = null, wBuilt = "";
+function buildWarm(){
+  const ws = warmWords(), types = ["listen","meaning","recall"];
+  wq = ws.map((w,i) => ({id:w.id, type: types[i % 3]}));
+  for (let i = wq.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [wq[i],wq[j]] = [wq[j],wq[i]]; }
+  wi = 0; wRight = 0; wAns = null; wBuilt = T();
+}
+function distractors(w, n){
+  const pool = wordList().filter(x => x.id !== w.id && x.en !== w.en && x.hz !== w.hz && micable(x.hz));
+  const learned = pool.filter(x => x.box >= 1), src = learned.length >= n ? learned : pool;
+  const out = [];
+  while (out.length < n && src.length) out.push(src.splice(Math.floor(Math.random()*src.length),1)[0]);
+  return out;
+}
+function renderWarm(){
+  const area = $("#warmArea"); area.replaceChildren();
+  if (wBuilt !== T()) buildWarm();
+  $("#wBar").style.width = wq.length ? (100*wi/wq.length)+"%" : "0";
+  $("#warmInfo").textContent = wq.length ? `${Math.min(wi+1,wq.length)} / ${wq.length}` : "";
+  if (!wq.length) {
+    area.append(el("div",{class:"card"}, el("div",{class:"big",text:"没有"}), el("p",{class:"muted",text:"No new words from last time. Learn some today and they'll be here tomorrow."}),
+      el("button",{class:"primary",type:"button",onclick:goNext},"Continue")));
+    return;
+  }
+  if (wi >= wq.length) {
+    area.append(el("div",{class:"card"}, el("div",{class:"big",text: wRight === wq.length ? "完美！" : "好了！"}), el("div",{class:"py",text: wRight === wq.length ? "wánměi! · perfect" : "hǎo le!"}),
+      el("p",{class:"muted",text:`${wRight} / ${wq.length} right. ${wRight === wq.length ? "Those words are sticking." : "The ones you missed come back in your reviews."}`}),
+      el("div",{class:"row",style:"justify-content:center"},
+        el("button",{class:"primary",type:"button",onclick:()=>{ renderToday(); goNext(); }},"Continue"),
+        el("button",{type:"button",onclick:()=>{ buildWarm(); renderWarm(); }},"Again"))));
+    return;
+  }
+  const q = wq[wi], w = S.words.get(q.id);
+  if (!wAns) {
+    const opts = [w, ...distractors(w, 3)];
+    for (let i = opts.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [opts[i],opts[j]] = [opts[j],opts[i]]; }
+    wAns = {opts, picked:null};
+    if (q.type === "listen") setTimeout(() => say(w.hz, false, w.id), 250);
+  }
+  const card = el("div",{class:"card",style:"min-height:200px"});
+  if (q.type === "listen") card.append(el("div",{class:"prompt",text:"Listen. Which word is it?"}), speakBtns(w.hz, w.id));
+  else if (q.type === "meaning") card.append(el("div",{class:"prompt",text:"What does it mean?"}), el("div",{class:"big",text:w.hz}));
+  else card.append(el("div",{class:"prompt",text:"Which one means…"}), el("div",{class:"en",style:"font-size:26px",text:w.en}));
+  area.append(card);
+  const opts = el("div",{class:"opts"});
+  wAns.opts.forEach(o => {
+    const label = q.type === "meaning" ? el("span",{text:o.en}) : el("span",{class:"han",text:o.hz});
+    const b = el("button",{type:"button"}, label);
+    if (wAns.picked) { if (o.id === w.id) b.dataset.state = "right"; else if (o.id === wAns.picked) b.dataset.state = "wrong"; b.disabled = true; }
+    b.addEventListener("click", () => {
+      if (wAns.picked) return;
+      wAns.picked = o.id; const ok = o.id === w.id;
+      if (ok) wRight++;
+      const cur = S.words.get(w.id);
+      if (cur.box >= 1 && cur.box <= 5 && cur.due && cur.due <= T() && cur.last !== T()) srsGrade(cur, ok);
+      bumpLog({warm:1, warmOk: ok?1:0});
+      if (q.type !== "listen") say(w.hz, false, w.id);
+      renderWarm();
+    });
+    opts.append(b);
+  });
+  area.append(opts);
+  if (wAns.picked) {
+    area.append(el("div",{class:"panel stack",style:"text-align:center;align-items:center"},
+      el("div",{class:"han",style:"font-size:34px;font-weight:700",text:w.hz}), el("div",{class:"py",style:"color:var(--jade)",text:w.py}), el("div",{text:w.en}),
+      speakBtns(w.hz, w.id), micable(w.hz) ? micBox(w.hz, w.id) : null),
+      el("button",{class:"primary big",type:"button",onclick:()=>{ wi++; wAns = null; renderWarm(); }}, wi+1 < wq.length ? "Next" : "Finish"));
+  }
+}
+
+/* ---------- GRAMMAR ---------- */
+const GRAMMAR = /*GRAMMAR*/[{"id":"g1","title":"Sentence skeleton","zh":"句子顺序","frame":[["Who","我"],["When","明天"],["Where","在公司"],["Do","开"],["What","会"]],"tip":"Chinese has a fixed skeleton: WHO + WHEN + WHERE + DO + WHAT. Time and place go BEFORE the verb, never at the end like in English or Spanish. Time can also go first: 明天我在公司开会.","ex":[{"zh":"我每天在家学中文。","py":"Wǒ měitiān zài jiā xué Zhōngwén.","en":"I study Chinese at home every day.","key":"g1e0"},{"zh":"她下午在咖啡店工作。","py":"Tā xiàwǔ zài kāfēidiàn gōngzuò.","en":"She works in a café in the afternoon.","key":"g1e1"},{"zh":"我们周末在深圳见面吧。","py":"Wǒmen zhōumò zài Shēnzhèn jiànmiàn ba.","en":"Let's meet in Shenzhen at the weekend.","key":"g1e2"}],"drill":[{"k":"order","t":["在公司","我","明天","开会"],"a":["我明天在公司开会","明天我在公司开会"],"py":"Wǒ míngtiān zài gōngsī kāihuì.","en":"I have a meeting at the office tomorrow.","key":"g1d0"},{"k":"order","t":["学中文","每天","我","在家"],"a":["我每天在家学中文","每天我在家学中文"],"py":"Wǒ měitiān zài jiā xué Zhōngwén.","en":"I study Chinese at home every day.","key":"g1d1"},{"k":"pick","q":"Which sentence is correct?","o":["我在公司明天工作。","我明天在公司工作。","我工作在公司明天。"],"a":1,"why":"WHEN (明天) before WHERE (在公司), both before the verb."}]},{"id":"g2","title":"Little adverbs go before the verb","zh":"也、都、还、就","frame":[["Who","我们"],["Adverb","都"],["Do","喜欢"],["What","深圳"]],"tip":"Short words like 也 yě (also), 都 dōu (all), 还 hái (still), 就 jiù (then), 常常 (often) and 一起 (together) sit right after the subject and before the verb. Never at the start or the end. Two together: 也都, 也常常.","ex":[{"zh":"我也是委内瑞拉人。","py":"Wǒ yě shì Wěinèiruìlā rén.","en":"I'm also Venezuelan.","key":"g2e0"},{"zh":"我们都在深圳工作。","py":"Wǒmen dōu zài Shēnzhèn gōngzuò.","en":"We all work in Shenzhen.","key":"g2e1"},{"zh":"我还没吃饭。","py":"Wǒ hái méi chīfàn.","en":"I haven't eaten yet.","key":"g2e2"}],"drill":[{"k":"order","t":["都","我们","喜欢","吃火锅"],"a":["我们都喜欢吃火锅"],"py":"Wǒmen dōu xǐhuan chī huǒguō.","en":"We all like hotpot.","key":"g2d0"},{"k":"order","t":["一起","我们","去吧","明天"],"a":["我们明天一起去吧","明天我们一起去吧"],"py":"Wǒmen míngtiān yìqǐ qù ba.","en":"Let's go together tomorrow.","key":"g2d1"},{"k":"pick","q":"Which sentence is correct?","o":["我们也都喜欢喝茶。","我们喜欢也都喝茶。","也我们都喜欢喝茶。"],"a":0,"why":"也 and 都 go after the subject, before the verb."}]},{"id":"g3","title":"To / with / from go before the verb","zh":"给、跟、离、从","frame":[["Who","我"],["When","晚上"],["To whom","给你"],["Do","打"],["What","电话"]],"tip":"This is the #1 word-order trap. 'To you', 'with a friend', 'from here' come BEFORE the verb in Chinese: 我给你打电话 (I call you), 我跟朋友吃饭 (I eat with friends). In English and Spanish they come after.","ex":[{"zh":"我明天给你发微信。","py":"Wǒ míngtiān gěi nǐ fā Wēixìn.","en":"I'll send you a WeChat tomorrow.","key":"g3e0"},{"zh":"我跟同事一起吃午饭。","py":"Wǒ gēn tóngshì yìqǐ chī wǔfàn.","en":"I have lunch with my colleagues.","key":"g3e1"},{"zh":"我家离公司很远。","py":"Wǒ jiā lí gōngsī hěn yuǎn.","en":"My home is far from the office.","key":"g3e2"}],"drill":[{"k":"order","t":["打电话","我","给你","晚上"],"a":["我晚上给你打电话","晚上我给你打电话"],"py":"Wǒ wǎnshang gěi nǐ dǎ diànhuà.","en":"I'll call you tonight.","key":"g3d0"},{"k":"order","t":["跟","我","朋友","吃饭","一起"],"a":["我跟朋友一起吃饭"],"py":"Wǒ gēn péngyou yìqǐ chīfàn.","en":"I eat with friends.","key":"g3d1"},{"k":"pick","q":"Which sentence is correct?","o":["我打电话给你明天。","我明天给你打电话。","我给你明天打电话。"],"a":1,"why":"WHEN first, then 给你, then the verb."}]},{"id":"g4","title":"了 · it happened, it's done","zh":"了","frame":[["Who","我"],["Adverb","已经"],["Do","吃"],["What","饭"],["Done","了"]],"tip":"了 after the verb or at the end = it happened / it's done. To say it did NOT happen, use 没 + verb and drop 了: 我没吃饭. At the end of a sentence 了 can also mean a change: 下雨了 (it's started to rain).","ex":[{"zh":"我已经到公司了。","py":"Wǒ yǐjīng dào gōngsī le.","en":"I've already got to the office.","key":"g4e0"},{"zh":"我买了两杯咖啡。","py":"Wǒ mǎi le liǎng bēi kāfēi.","en":"I bought two coffees.","key":"g4e1"},{"zh":"他还没来。","py":"Tā hái méi lái.","en":"He hasn't come yet.","key":"g4e2"}],"drill":[{"k":"order","t":["了","我","到公司","已经"],"a":["我已经到公司了"],"py":"Wǒ yǐjīng dào gōngsī le.","en":"I've already got to the office.","key":"g4d0"},{"k":"pick","q":"昨天我___去上班。 (I didn't go to work yesterday.)","o":["没","不","别"],"a":0,"why":"For the past, say 没, and no 了."},{"k":"pick","q":"Which sentence is correct?","o":["我没吃饭了。","我没吃饭。","我不吃饭了昨天。"],"a":1,"why":"没 and 了 don't go together."}]},{"id":"g5","title":"过 · I have done it before","zh":"过","frame":[["Who","我"],["Do","去"],["Ever","过"],["Where","上海"],["Times","一次"]],"tip":"Verb + 过 = you have done it at some time in your life. Negative: 没 + verb + 过. Counting (一次, 两次) comes after 过.","ex":[{"zh":"我吃过北京烤鸭。","py":"Wǒ chī guo Běijīng kǎoyā.","en":"I've eaten Peking duck.","key":"g5e0"},{"zh":"你去过广州吗？","py":"Nǐ qù guo Guǎngzhōu ma?","en":"Have you been to Guangzhou?","key":"g5e1"},{"zh":"我没学过广东话。","py":"Wǒ méi xué guo Guǎngdōnghuà.","en":"I've never studied Cantonese.","key":"g5e2"}],"drill":[{"k":"order","t":["过","我","去","香港","两次"],"a":["我去过两次香港","我去过香港两次"],"py":"Wǒ qù guo liǎng cì Xiānggǎng.","en":"I've been to Hong Kong twice.","key":"g5d0"},{"k":"pick","q":"你看___这个电影吗？ (Have you ever seen this film?)","o":["过","在","吧"],"a":0,"why":"Ever done it = verb + 过."},{"k":"pick","q":"我没去___日本。 (I've never been to Japan.)","o":["过","了","的"],"a":0,"why":"Never = 没 + verb + 过."}]},{"id":"g6","title":"得 · how well you do it","zh":"得","frame":[["Who","她"],["Do","说"],["得","得"],["How","很好"]],"tip":"To say HOW someone does something: verb + 得 + (很) + adjective. With an object, put the object first or say the verb twice: 她中文说得很好 / 她说中文说得很好.","ex":[{"zh":"你说得很好！","py":"Nǐ shuō de hěn hǎo!","en":"You speak very well!","key":"g6e0"},{"zh":"他跑得很快。","py":"Tā pǎo de hěn kuài.","en":"He runs fast.","key":"g6e1"},{"zh":"她中文说得非常好。","py":"Tā Zhōngwén shuō de fēicháng hǎo.","en":"She speaks Chinese really well.","key":"g6e2"}],"drill":[{"k":"order","t":["得","他","很快","跑"],"a":["他跑得很快"],"py":"Tā pǎo de hěn kuài.","en":"He runs fast.","key":"g6d0"},{"k":"order","t":["说得","她","中文","很好"],"a":["她中文说得很好"],"py":"Tā Zhōngwén shuō de hěn hǎo.","en":"She speaks Chinese well.","key":"g6d1"},{"k":"pick","q":"她做饭做___很好吃。","o":["得","的","地"],"a":0,"why":"Right after a verb, describing how: 得."}]},{"id":"g7","title":"比 · comparing","zh":"比","frame":[["A","今天"],["比","比"],["B","昨天"],["Adj.","热"]],"tip":"A 比 B + adjective. Never put 很 in front: 今天比昨天热, NOT 很热. Much more: 热多了 or 更热. Not as … as: A 没有 B + adjective.","ex":[{"zh":"深圳比北京热。","py":"Shēnzhèn bǐ Běijīng rè.","en":"Shenzhen is hotter than Beijing.","key":"g7e0"},{"zh":"坐地铁比打车便宜多了。","py":"Zuò dìtiě bǐ dǎchē piányi duō le.","en":"The metro is much cheaper than a taxi.","key":"g7e1"},{"zh":"我的中文没有她好。","py":"Wǒ de Zhōngwén méiyǒu tā hǎo.","en":"My Chinese isn't as good as hers.","key":"g7e2"}],"drill":[{"k":"order","t":["比","这个","那个","贵"],"a":["这个比那个贵"],"py":"Zhège bǐ nàge guì.","en":"This one is more expensive than that one.","key":"g7d0"},{"k":"pick","q":"Which sentence is correct?","o":["今天比昨天很冷。","今天比昨天冷。","今天冷比昨天。"],"a":1,"why":"No 很 in a 比 sentence."},{"k":"pick","q":"我的中文___她好。 (not as good as hers)","o":["没有","比","很"],"a":0,"why":"Not as … as = 没有."}]},{"id":"g8","title":"How long goes after the verb","zh":"时间长短","frame":[["Who","我"],["Did","学了"],["How long","两年"],["What","中文"]],"tip":"WHEN goes before the verb, but HOW LONG goes after it: 我学了两年中文, 我等了你半个小时. Results also stick to the verb: 听懂 (understand by listening), 做完 (finish), 找到 (find).","ex":[{"zh":"我在中国住了一年多。","py":"Wǒ zài Zhōngguó zhù le yì nián duō.","en":"I've lived in China for over a year.","key":"g8e0"},{"zh":"我等了你半个小时。","py":"Wǒ děng le nǐ bàn ge xiǎoshí.","en":"I waited for you for half an hour.","key":"g8e1"},{"zh":"你说得太快，我没听懂。","py":"Nǐ shuō de tài kuài, wǒ méi tīng dǒng.","en":"You speak too fast, I didn't understand.","key":"g8e2"}],"drill":[{"k":"order","t":["两年","我","中文","学了"],"a":["我学了两年中文"],"py":"Wǒ xué le liǎng nián Zhōngwén.","en":"I studied Chinese for two years.","key":"g8d0"},{"k":"pick","q":"Which sentence is correct?","o":["我两个小时工作了。","我工作了两个小时。","我工作两个小时了了。"],"a":1,"why":"How long (两个小时) goes after the verb."},{"k":"pick","q":"老师说的话，我都听___了。","o":["懂","得","过"],"a":0,"why":"听懂 = hear and understand."}]},{"id":"g9","title":"正在…呢 · doing it right now","zh":"正在…呢","frame":[["Who","她"],["Now","正在"],["Do","开会"],["呢","呢"]],"tip":"正在 (or just 在) + verb, often with 呢 at the end, means you're doing it right now. Perfect for WeChat: 我在开会 (I'm in a meeting), 我在路上 (I'm on my way).","ex":[{"zh":"我正在开会，等一下给你回电话。","py":"Wǒ zhèngzài kāihuì, děng yíxià gěi nǐ huí diànhuà.","en":"I'm in a meeting, I'll call you back in a bit.","key":"g9e0"},{"zh":"你在做什么呢？","py":"Nǐ zài zuò shénme ne?","en":"What are you doing?","key":"g9e1"},{"zh":"他在路上呢。","py":"Tā zài lùshang ne.","en":"He's on his way.","key":"g9e2"}],"drill":[{"k":"order","t":["呢","她","正在","开会"],"a":["她正在开会呢"],"py":"Tā zhèngzài kāihuì ne.","en":"She's in a meeting right now.","key":"g9d0"},{"k":"pick","q":"我___吃饭，等一下。 (I'm eating, wait a moment.)","o":["正在","已经","过"],"a":0,"why":"Doing it right now = 正在."}]},{"id":"g10","title":"Pairs: because…so, although…but","zh":"因为…所以 · 虽然…但是","frame":[["Because","因为太忙了"],["So","所以"],["Who","我"],["Result","没去"]],"tip":"Chinese uses both words of the pair: 因为…所以… (because… so…), 虽然…但是… (although… but…). The reason comes first, the result second.","ex":[{"zh":"因为太忙了，所以我没去。","py":"Yīnwèi tài máng le, suǒyǐ wǒ méi qù.","en":"Because I was too busy, I didn't go.","key":"g10e0"},{"zh":"虽然很贵，但是质量很好。","py":"Suīrán hěn guì, dànshì zhìliàng hěn hǎo.","en":"Although it's expensive, the quality is good.","key":"g10e1"},{"zh":"虽然我很累，但是我很开心。","py":"Suīrán wǒ hěn lèi, dànshì wǒ hěn kāixīn.","en":"Although I'm tired, I'm happy.","key":"g10e2"}],"drill":[{"k":"order","t":["所以","因为下雨了","不去了","我们"],"a":["因为下雨了所以我们不去了"],"py":"Yīnwèi xià yǔ le, suǒyǐ wǒmen bú qù le.","en":"Because it's raining, we're not going.","key":"g10d0"},{"k":"order","t":["但是","虽然很贵","很好吃"],"a":["虽然很贵但是很好吃"],"py":"Suīrán hěn guì, dànshì hěn hǎochī.","en":"Although it's expensive, it's delicious.","key":"g10d1"},{"k":"pick","q":"___我很累，但是我很开心。","o":["虽然","因为","所以"],"a":0,"why":"但是 pairs with 虽然."}]},{"id":"g11","title":"如果…就 · if… then","zh":"如果…就","frame":[["If","如果太贵"],["Who","我"],["Then","就"],["Do","不买了"]],"tip":"如果… (就) … = if… then… In the second part, 就 goes after the subject and before the verb. 就 alone can also mean 'right away': 我下班就回家.","ex":[{"zh":"如果你有时间，我们就一起去吧。","py":"Rúguǒ nǐ yǒu shíjiān, wǒmen jiù yìqǐ qù ba.","en":"If you have time, let's go together.","key":"g11e0"},{"zh":"如果太贵，我就不买了。","py":"Rúguǒ tài guì, wǒ jiù bù mǎi le.","en":"If it's too expensive, I won't buy it.","key":"g11e1"},{"zh":"我下班就回家。","py":"Wǒ xiàbān jiù huí jiā.","en":"I go straight home after work.","key":"g11e2"}],"drill":[{"k":"order","t":["就","如果太贵","我","不买了"],"a":["如果太贵我就不买了"],"py":"Rúguǒ tài guì, wǒ jiù bù mǎi le.","en":"If it's too expensive, I won't buy it.","key":"g11d0"},{"k":"pick","q":"Which sentence is correct?","o":["如果你有时间，我们就去吧。","如果你有时间，就我们去吧。","你有时间如果，我们去就吧。"],"a":0,"why":"Subject (我们) first, then 就."}]},{"id":"g12","title":"是…的 · how, when, where it happened","zh":"是…的","frame":[["Who","我"],["是","是"],["How","坐地铁"],["Did","来"],["的","的"]],"tip":"For something that already happened, 是…的 highlights HOW, WHEN or WHERE: 我是坐地铁来的 (I came by metro). People ask this all the time: 你是什么时候来的？","ex":[{"zh":"我是去年来深圳的。","py":"Wǒ shì qùnián lái Shēnzhèn de.","en":"I came to Shenzhen last year.","key":"g12e0"},{"zh":"你是怎么来的？","py":"Nǐ shì zěnme lái de?","en":"How did you get here?","key":"g12e1"},{"zh":"这个是在淘宝买的。","py":"Zhège shì zài Táobǎo mǎi de.","en":"I bought this on Taobao.","key":"g12e2"}],"drill":[{"k":"order","t":["是","我","坐地铁","来的"],"a":["我是坐地铁来的"],"py":"Wǒ shì zuò dìtiě lái de.","en":"I came by metro.","key":"g12d0"},{"k":"pick","q":"你是什么时候来中国___？","o":["的","了","过"],"a":0,"why":"是 … 的 go together."}]},{"id":"g13","title":"把 · doing something to a thing","zh":"把","frame":[["Who","你"],["把","把"],["Thing","文件"],["Do","发"],["Result","给我"]],"tip":"把 brings the object before the verb to say what you DO to it: 把 + thing + verb + result. Great for requests at work: 把文件发给我 (send me the file). The verb needs something after it (上, 好, 完, 给我, 了).","ex":[{"zh":"请把门关上。","py":"Qǐng bǎ mén guānshang.","en":"Please close the door.","key":"g13e0"},{"zh":"你把文件发给我吧。","py":"Nǐ bǎ wénjiàn fā gěi wǒ ba.","en":"Send me the file.","key":"g13e1"},{"zh":"我把咖啡喝完了。","py":"Wǒ bǎ kāfēi hē wán le.","en":"I finished the coffee.","key":"g13e2"}],"drill":[{"k":"order","t":["把","请","发给我","文件"],"a":["请把文件发给我"],"py":"Qǐng bǎ wénjiàn fā gěi wǒ.","en":"Please send me the file.","key":"g13d0"},{"k":"pick","q":"Which sentence is correct?","o":["我把作业做完了。","我把做完了作业。","我做完了把作业。"],"a":0,"why":"把 + thing + verb + result."}]},{"id":"g14","title":"被 · it was done to it","zh":"被","frame":[["Thing","我的钱包"],["被","被"],["Who","小偷"],["Did","偷了"]],"tip":"被 makes a passive sentence, often for something bad: thing + 被 + (person) + verb + result. 我的钱包被偷了 = my wallet was stolen.","ex":[{"zh":"我的手机被弟弟拿走了。","py":"Wǒ de shǒujī bèi dìdi ná zǒu le.","en":"My phone was taken by my little brother.","key":"g14e0"},{"zh":"蛋糕被吃完了。","py":"Dàngāo bèi chī wán le.","en":"The cake was all eaten.","key":"g14e1"},{"zh":"我的钱包被偷了。","py":"Wǒ de qiánbāo bèi tōu le.","en":"My wallet was stolen.","key":"g14e2"}],"drill":[{"k":"order","t":["被","我的钱包","偷了"],"a":["我的钱包被偷了"],"py":"Wǒ de qiánbāo bèi tōu le.","en":"My wallet was stolen.","key":"g14d0"},{"k":"pick","q":"蛋糕___孩子吃完了。","o":["被","把","比"],"a":0,"why":"The cake had it done to it: 被."}]},{"id":"g15","title":"越来越 · 一边…一边","zh":"越来越 · 一边","frame":[["Who","你的中文"],["More and more","越来越"],["Adj.","好"],["了","了"]],"tip":"越来越 + adjective = more and more. 一边 A 一边 B = doing A while doing B. Both go after the subject.","ex":[{"zh":"你的中文越来越好了！","py":"Nǐ de Zhōngwén yuèláiyuè hǎo le!","en":"Your Chinese is getting better and better!","key":"g15e0"},{"zh":"我喜欢一边听音乐一边做饭。","py":"Wǒ xǐhuan yìbiān tīng yīnyuè yìbiān zuòfàn.","en":"I like listening to music while I cook.","key":"g15e1"},{"zh":"天气越来越冷了。","py":"Tiānqì yuèláiyuè lěng le.","en":"It's getting colder and colder.","key":"g15e2"}],"drill":[{"k":"order","t":["越来越","你的中文","好了"],"a":["你的中文越来越好了"],"py":"Nǐ de Zhōngwén yuèláiyuè hǎo le.","en":"Your Chinese is getting better and better.","key":"g15d0"},{"k":"order","t":["一边","一边","他","喝咖啡","看书"],"a":["他一边喝咖啡一边看书","他一边看书一边喝咖啡"],"py":"Tā yìbiān hē kāfēi yìbiān kàn shū.","en":"He reads while drinking coffee.","key":"g15d1"},{"k":"pick","q":"天气___冷了。","o":["越来越","一边","比"],"a":0,"why":"More and more = 越来越."}]}];
+let gView = null;
+function gState(id){ return (LOCAL.g||{})[id]; }
+function nextLesson(){
+  const notDone = GRAMMAR.find(g => !gState(g.id));
+  if (notDone) return notDone;
+  /* all done: review the weakest, oldest one */
+  return [...GRAMMAR].sort((a,b) => (gState(a.id).best - gState(b.id).best) || (gState(a.id).last < gState(b.id).last ? -1 : 1))[0];
+}
+function frameEl(g){ return el("div",{class:"frame"}, ...g.frame.map(([lab, zh]) => el("div",{class:"blk"}, el("b",{text:zh}), el("span",{text:lab})))); }
+function renderGrammar(){
+  const area = $("#grammarArea"); area.replaceChildren();
+  if (!gView) {
+    const nl = nextLesson(), done = GRAMMAR.filter(g => gState(g.id)).length;
+    area.append(el("div",{class:"row",style:"justify-content:space-between"}, el("h1",{}, "Grammar ", el("span",{class:"han",text:"语法"})), el("span",{class:"note",text:`${done} / ${GRAMMAR.length} learned`})),
+      el("p",{class:"note",style:"margin:0",text:"The 15 patterns you need for HSK 3, starting with word order. One lesson a day: learn the pattern, hear it, say it, then practise."}),
+      el("button",{class:"primary big",type:"button",onclick:()=>{ gView = {id:nl.id, step:"learn"}; renderGrammar(); window.scrollTo(0,0); }},
+        gState(nl.id) ? `Review · ${nl.title}` : `Lesson ${GRAMMAR.indexOf(nl)+1} · ${nl.title}`));
+    const ul = el("ul",{class:"glist"});
+    GRAMMAR.forEach((g,i) => {
+      const st = gState(g.id), tot = g.drill.length;
+      ul.append(el("li",{"data-s": st ? "done" : g === nl ? "next" : ""},
+        el("button",{type:"button",onclick:()=>{ gView = {id:g.id, step:"learn"}; renderGrammar(); window.scrollTo(0,0); }},
+          el("span",{class:"num",text: st ? "✓" : String(i+1)}),
+          el("span",{class:"gt"}, el("b",{text:g.title}), el("span",{class:"note han",text:g.zh})),
+          el("span",{class:"chip",text: st ? `${st.best}/${tot}` : g === nl ? "Next" : ""}))));
+    });
+    area.append(ul);
+    return;
+  }
+  const g = GRAMMAR.find(x => x.id === gView.id), n = GRAMMAR.indexOf(g) + 1;
+  const back = el("button",{type:"button",class:"ghost",style:"align-self:flex-start;padding-left:0",onclick:()=>{ gView = null; renderGrammar(); }},"← All lessons");
+  if (gView.step === "learn") {
+    const p = el("div",{class:"panel stack"},
+      el("div",{class:"eyebrow",text:`Lesson ${n} of ${GRAMMAR.length}`}),
+      el("h1",{text:g.title}), el("div",{class:"han muted",style:"font-size:17px",text:g.zh}),
+      el("div",{class:"eyebrow",text:"The pattern"}), frameEl(g),
+      el("div",{class:"tipbox",text:g.tip}),
+      el("div",{class:"eyebrow",text:"Hear it, then say it"}));
+    g.ex.forEach(e => p.append(el("div",{class:"exrow"},
+      el("div",{class:"han",text:e.zh}), el("div",{class:"py",text:e.py}), el("div",{class:"note",text:e.en}),
+      el("div",{class:"row"}, el("button",{class:"speak",type:"button",onclick:()=>say(e.zh,true,e.key)},"🔊 Slow"), el("button",{class:"speak",type:"button",onclick:()=>say(e.zh,false,e.key)},"🔊 Normal")),
+      micBox(e.zh, e.key))));
+    area.append(back, p, el("button",{class:"primary big",type:"button",onclick:()=>{ gView = {id:g.id, step:"drill", i:0, score:0}; renderGrammar(); window.scrollTo(0,0); }},`Practise · ${g.drill.length} questions`));
+    return;
+  }
+  if (gView.step === "drill") {
+    const d = g.drill[gView.i], last = gView.i + 1 >= g.drill.length;
+    const next = () => { if (last) finishLesson(g); else { gView.i++; gView.ans = null; renderGrammar(); } };
+    const p = el("div",{class:"panel stack"},
+      el("div",{class:"row",style:"justify-content:space-between"}, el("div",{class:"eyebrow",text:`${g.title} · practice`}), el("span",{class:"note",text:`${gView.i+1} / ${g.drill.length}`})),
+      el("div",{class:"progressbar"}, el("i",{style:`width:${100*gView.i/g.drill.length}%`})));
+    if (d.k === "order") {
+      p.append(el("h2",{text:"Put the words in order"}),
+        orderWidget({...d, g:g.id}, {onCheck: ok => { if (ok) gView.score++; missOrder(d.key, ok); bumpLog({order:1, orderN:1, orderOk: ok?1:0}); }, onNext: next, nextLabel: last ? "Finish" : "Next"}));
+    } else {
+      p.append(el("h2",{class: /[一-鿿]/.test(d.q) ? "han" : "", text:d.q}));
+      const opts = el("div",{class:"opts"});
+      d.o.forEach((o,oi) => {
+        const b = el("button",{type:"button"}, el("b",{text:"ABC"[oi]}), el("span",{class:"han",text:o}));
+        if (gView.ans != null) { b.disabled = true; if (oi === d.a) b.dataset.state = "right"; else if (oi === gView.ans) b.dataset.state = "wrong"; }
+        b.addEventListener("click", () => { if (gView.ans != null) return; gView.ans = oi; if (oi === d.a) gView.score++; renderGrammar(); });
+        opts.append(b);
+      });
+      p.append(opts);
+      if (gView.ans != null) {
+        const ok = gView.ans === d.a, full = d.q.includes("___") ? d.q.split(" (")[0].replace("___", d.o[d.a]) : d.o[d.a];
+        p.append(el("div",{class:"result","data-ok":ok?"1":"0"}, el("div",{text: ok ? "✓ 对了！" : "✗ Not this time."}), el("div",{class:"han",text:full}), el("div",{class:"note",text:d.why})),
+          el("div",{class:"row"}, el("button",{class:"speak",type:"button",onclick:()=>say(full,false,null)},"🔊 Listen"), el("button",{class:"primary",type:"button",onclick:next}, last ? "Finish" : "Next")));
+      }
+    }
+    area.append(back, p);
+    return;
+  }
+  /* done */
+  const tot = g.drill.length, sc = gView.score, nl = nextLesson();
+  area.append(back, el("div",{class:"card"},
+    el("div",{class:"big",text: sc === tot ? "完美！" : "不错！"}), el("div",{class:"py",text: sc === tot ? "wánměi · perfect" : "búcuò · not bad"}),
+    el("p",{class:"muted",text:`${sc} / ${tot} right on “${g.title}”. ${sc === tot ? "" : "These sentences come back in your daily sentence order practice."}`}),
+    el("div",{class:"row",style:"justify-content:center"},
+      el("button",{class:"primary",type:"button",onclick:()=>{ gView = null; renderToday(); goNext(); }},"Continue today"),
+      nl.id !== g.id ? el("button",{type:"button",onclick:()=>{ gView = {id:nl.id, step:"learn"}; renderGrammar(); window.scrollTo(0,0); }},"Next lesson") : null)));
+}
+function finishLesson(g){
+  LOCAL.g = LOCAL.g || {};
+  const prev = LOCAL.g[g.id] || {best:0, n:0};
+  LOCAL.g[g.id] = {best: Math.max(prev.best, gView.score), n: prev.n + 1, last: T(), first: prev.first || T()};
+  gView = {id:g.id, step:"done", score:gView.score};
+  bumpLog({grammar:1}); buildOrderPool(); renderOrder(); spPool = []; renderGrammar(); window.scrollTo(0,0);
+}
+
+/* ---------- SPEAKING practice ---------- */
+let spPool = [], spPos = 0, spTried = false;
+function buildSpeak(){
+  const pr = LOCAL.pr || {};
+  const fromLessons = [];
+  for (const g of GRAMMAR) if (gState(g.id)) g.ex.forEach(e => fromLessons.push({zh:e.zh, py:e.py, en:e.en, key:e.key, src:g.title}));
+  const base = ORDERS.map((it,i) => ({zh:it.a[0]+"。", py:it.py, en:it.en, key:"o"+i, src:"Everyday sentences"}));
+  const all = [...fromLessons, ...base];
+  const weak = x => { const v = pr[strip(x.zh)]; return v ? v[0] - v[1] : 0; };
+  const r = new Map(all.map(x => [x.key, Math.random()]));
+  all.sort((a,b) => weak(b) - weak(a) || r.get(a.key) - r.get(b.key));
+  spPool = all; spPos = 0; spTried = false;
+}
+function renderSpeak(){
+  const area = $("#speakArea"); area.replaceChildren();
+  if (!spPool.length) buildSpeak();
+  const it = spPool[spPos % spPool.length], lg = todayLog();
+  const v = (LOCAL.pr||{})[strip(it.zh)];
+  area.append(el("div",{class:"panel stack",style:"align-items:center;text-align:center"},
+    el("div",{class:"row",style:"justify-content:space-between;width:100%"}, el("span",{class:"chip",text:it.src}), el("span",{class:"note",text:`${Math.min(lg.speakS,5)} / 5 today`})),
+    el("div",{class:"han",style:"font-size:26px;font-weight:700;line-height:1.5",text:it.zh}),
+    el("div",{style:"color:var(--jade)",text:it.py}), el("div",{class:"note",text:it.en}),
+    v && v[0] > v[1] ? el("div",{class:"chip new",text:`Tricky for you before · ${v[1]}/${v[0]} clear`}) : null,
+    el("p",{class:"note",style:"margin:0",text:"1. Listen slowly. 2. Say it with the same melody. 3. Check it."}),
+    speakBtns(it.zh, it.key),
+    micBox(it.zh, it.key, () => { spTried = true; })),
+    el("button",{class:"primary big",type:"button",onclick:()=>{ if (spTried) bumpLog({speakS:1}); spPos++; spTried = false; renderSpeak(); window.scrollTo(0,0); }}, "Next sentence"),
+    ...(lg.speakS >= 5 ? [el("button",{type:"button",onclick:goNext},"Done for today")] : []),
+    !SR ? el("p",{class:"note",text:"Automatic checking isn't available in this browser, so use ⏺ Record & compare. If you added the app to your home screen, try opening mescalante15.github.io/hsk3 in Safari for the 🎤 check."}) : el("p",{class:"note",text:"The 🎤 check uses your phone's Chinese dictation. If it writes what you meant, a Chinese listener understands you. It can't grade each tone exactly, so keep copying the melody."}));
+}
+
+/* ---------- ME / PROGRESS ---------- */
+function sumDays(n, f){ let t = 0; for (let i=0;i<n;i++){ const x = S.logs.get(addDays(T(),-i)); if (x) t += f(x) || 0; } return t; }
 function renderProgress(){
-  const ws = wordList();
+  if (!$("#boxChart")) return;
+  const ws = wordList(), N = ws.length;
+  /* profile */
+  renderAvatars();
+  $("#meName").textContent = myName();
+  const first = [...S.logs.keys()].sort()[0] || T();
+  const left = diffDays(T(), S.settings.examDate || DEFAULTS.examDate);
+  $("#meSince").textContent = `Studying since ${new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(first+"T12:00:00Z"))} · ${left >= 0 ? left + " days to the exam" : "exam day passed"}`;
+  const lv = $("#levels"); lv.replaceChildren();
+  let nowSet = false;
+  for (const h of [1,2,3]) {
+    const hw = ws.filter(w => w.hsk === h), pct = hw.length ? Math.round(100*hw.filter(w=>w.box>=1).length/hw.length) : 0;
+    const s = pct >= 95 ? "done" : !nowSet ? (nowSet = true, "now") : "";
+    lv.append(el("div",{"data-s":s}, el("b",{text:`HSK ${h}`}), `${pct}% words`));
+  }
+  /* readiness */
+  const wScore = ws.reduce((t,w) => t + (w.box >= 1 ? 0.4 + 0.6*Math.min(w.box,6)/6 : 0), 0) / Math.max(1,N);
+  const gScore = GRAMMAR.reduce((t,g) => t + (gState(g.id) ? gState(g.id).best / g.drill.length : 0), 0) / GRAMMAR.length;
+  const acc = (ok, all) => all ? ok/all : null;
+  const rAcc = acc(sumDays(14,x=>x.readingOk), sumDays(14,x=>x.readingQ)), oAcc = acc(sumDays(14,x=>x.orderOk), sumDays(14,x=>x.orderN));
+  const sk = [rAcc, oAcc].filter(x => x != null), sScore = sk.length ? sk.reduce((a,b)=>a+b,0)/sk.length : 0;
+  const ready = Math.round(100*(0.5*wScore + 0.3*gScore + 0.2*sScore));
+  const start = "2026-11-24", span = Math.max(1, diffDays(start, S.settings.examDate || DEFAULTS.examDate));
+  const mark = Math.min(100, Math.round(100*Math.max(0, diffDays(start, T()))/span));
+  $("#readyPct").textContent = ready + "%";
+  $("#readyBar").style.width = ready + "%";
+  $("#readyMark").style.left = `calc(${mark}% - 1px)`;
+  $("#readyNote").textContent = (ready >= mark ? `On track. The line shows where you should be today (${mark}%). ` : `${mark - ready}% behind today's line (${mark}%). One extra round this week catches you up. `) + "Readiness = words 50% + grammar 30% + reading and word order 20%.";
+  /* skills */
+  const skills = $("#skills"); skills.replaceChildren();
+  const rows = [
+    ["Words", acc(sumDays(14,x=>x.right), sumDays(14,x=>x.reviewed))],
+    ["Warm-up", acc(sumDays(14,x=>x.warmOk), sumDays(14,x=>x.warm))],
+    ["Grammar", GRAMMAR.filter(g=>gState(g.id)).length / GRAMMAR.length, `${GRAMMAR.filter(g=>gState(g.id)).length}/${GRAMMAR.length}`],
+    ["Word order", oAcc],
+    ["Reading", rAcc],
+    ["Speaking", acc(sumDays(14,x=>x.speakOk), sumDays(14,x=>x.speakN))]
+  ];
+  for (const [name, v, label] of rows) skills.append(el("div",{class:"skill"}, el("span",{text:name}),
+    el("div",{class:"meter"}, el("i",{style:`width:${v==null?0:Math.round(100*v)}%;background:${v!=null&&v<0.6?"var(--ochre)":"var(--jade)"}`})),
+    el("b",{text: label || (v==null ? "–" : Math.round(100*v)+"%")})));
+  /* activity */
+  const bars = $("#bars14"); bars.replaceChildren();
+  const vals = [];
+  for (let i=13;i>=0;i--){ const d = addDays(T(),-i), x = S.logs.get(d);
+    vals.push([d, x ? (x.reviewed||0)+(x.newLearned||0)+(x.warm||0)+(x.reading||0)*5+(x.order||0)+(x.grammar||0)*8+(x.speakS||0)*2 : 0]); }
+  const vmax = Math.max(10, ...vals.map(v=>v[1]));
+  let active = 0;
+  for (const [d,v] of vals) { if (v) active++;
+    bars.append(el("div",{class:"c","data-today": d===T()?"1":"0",title:`${d}: ${v}`}, el("i",{class: v?"":"z",style:`height:${Math.max(2,Math.round(90*v/vmax))}px`}),
+      el("span",{text:"MTWTFSS"[(new Date(d+"T12:00:00Z").getUTCDay()+6)%7]}))); }
+  const cards = sumDays(14, x => (x.reviewed||0)+(x.newLearned||0));
+  $("#daySummary").textContent = `${active} of the last 14 days · ${cards} word cards · ${streak()}-day streak`;
+  /* badges */
+  const learned = ws.filter(w=>w.box>=1).length, gd = GRAMMAR.filter(g=>gState(g.id)).length, st = streak(), spk = sumDays(90, x=>x.speakOk);
+  const bd = $("#badges"); bd.replaceChildren();
+  for (const [t,on] of [["🌱 50 words",learned>=50],["🌿 100 words",learned>=100],["🌳 150 words",learned>=150],["🏆 All "+N+" words",learned>=N],
+    ["🔥 3 days",st>=3],["🔥 7 days",st>=7],["🔥 14 days",st>=14],["📐 5 grammar",gd>=5],["📐 All grammar",gd>=GRAMMAR.length],["🎤 First clear sentence",spk>=1],["🎤 25 clear",spk>=25]])
+    bd.append(el("span",{class:"badge","data-on":on?"1":"0"}, t));
+  /* weak words */
+  const weak = ws.filter(w => (w.wrong||0) > 0 && w.box >= 1 && w.box <= 3).sort((a,b) => (b.wrong||0)-(a.wrong||0) || a.box-b.box).slice(0,8);
+  const wl = $("#weakList"); wl.replaceChildren();
+  if (!weak.length) wl.append(el("p",{class:"note",style:"margin:0",text:"No weak words right now. 太棒了！"}));
+  for (const w of weak) wl.append(el("button",{type:"button",onclick:()=>say(w.hz,false,w.id)}, el("span",{class:"han",text:w.hz}), el("span",{}, w.py+" · "+w.en), el("small",{text:`missed ${w.wrong}× · box ${w.box}`})));
+  /* stage chart */
   const cols = [["New",w=>!w.box,"new"],["1",w=>w.box===1],["2",w=>w.box===2],["3",w=>w.box===3],["4",w=>w.box===4],["5",w=>w.box===5],["Known",w=>w.box===6,"known"]];
   const counts = cols.map(c=>ws.filter(c[1]).length), max = Math.max(1,...counts);
   const chart = $("#boxChart"); chart.replaceChildren();
@@ -739,17 +1321,18 @@ function renderProgress(){
     el("span",{class:"n",text:counts[i]}),
     el("div",{class:"bar "+(c[2]||""),style:`height:${Math.round(100*counts[i]/max)}px`}),
     el("span",{class:"l",text:c[0]}))));
-  const dots = $("#dayDots"); dots.replaceChildren();
-  let active = 0, cards = 0;
-  for (let i=13;i>=0;i--){
-    const d = addDays(T(),-i), x = S.logs.get(d);
-    const n = x ? (x.reviewed||0)+(x.newLearned||0)+(x.reading||0)+(x.order||0)+(x.speak?5:0) : 0;
-    if (n) active++; cards += x ? (x.reviewed||0)+(x.newLearned||0) : 0;
-    dots.append(el("i",{"data-l": n===0?"0": n<15?"1":"2", title:`${d}: ${n} activities`}));
-  }
-  $("#daySummary").textContent = `${active} of the last 14 days studied · ${cards} word cards`;
+  if ($("#allWords").open) renderAllWords();
 }
+function renderAllWords(){
+  const l = $("#allList"); l.replaceChildren();
+  const ws = wordList().filter(w => w.box >= 1).sort((a,b) => (a.order||0)-(b.order||0));
+  if (!ws.length) l.append(el("p",{class:"note",text:"No words yet."}));
+  for (const w of ws) l.append(el("button",{type:"button",onclick:()=>say(w.hz,false,w.id)}, el("span",{class:"han",text:w.hz}), el("span",{}, w.py+" · "+w.en), el("small",{text: w.box===6 ? "known" : "box "+w.box})));
+}
+$("#allWords").addEventListener("toggle", () => { if ($("#allWords").open) renderAllWords(); });
+
 function fillSettings(){
+  $("#myName").value = myName();
   $("#examDate").value = S.settings.examDate;
   $("#dailyNew").value = String(S.settings.dailyNew);
   $("#reviewCap").value = String(S.settings.reviewCap);
@@ -757,17 +1340,25 @@ function fillSettings(){
 $("#settingsForm").addEventListener("submit", e => {
   e.preventDefault();
   const s = {examDate: $("#examDate").value || DEFAULTS.examDate, dailyNew: +$("#dailyNew").value, reviewCap: +$("#reviewCap").value};
-  S.settings = s; LOCAL.settings = s; markDirty(); saveLocal(); renderToday();
+  S.settings = s; LOCAL.settings = s;
+  LOCAL.profile = {...(LOCAL.profile||{}), name: ($("#myName").value || "Mary").trim().slice(0,30)};
+  markDirty(); saveLocal(); renderToday(); renderProgress();
   $("#saveNote").textContent = S.storageOk ? "Saved." : "Couldn't save on this browser.";
 });
 $("#exportBtn").addEventListener("click", () => copyProgress($("#exportNote")));
 
 /* ---------- routing ---------- */
-const VIEWS = ["today","cards","practice","progress"];
+const VIEWS = ["today","cards","warm","grammar","practice","me"];
 function route(){
-  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "today";
+  let v = location.hash.slice(1); if (v === "progress") v = "me";
+  if (!VIEWS.includes(v)) v = "today";
   for (const s of document.querySelectorAll("[data-view]")) s.hidden = s.id !== "v-"+v;
-  for (const a of document.querySelectorAll("nav.tabs a")) { if (a.dataset.tab===v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); }
+  const tab = v === "warm" ? "cards" : v;
+  for (const a of document.querySelectorAll("nav.tabs a")) { if (a.dataset.tab===tab) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); }
+  if (v==="warm") renderWarm();
+  if (v==="grammar") renderGrammar();
+  if (v==="me") renderProgress();
+  if (v==="practice" && !$("#speakArea").hidden) renderSpeak();
   if (v==="cards" && S.loaded && !sessionBuilt) { if (pendingFree) buildFree(); else buildQueue(); }
   if (v==="cards") renderCard();
   window.scrollTo(0,0);
@@ -778,7 +1369,7 @@ window.addEventListener("hashchange", route);
 rIdx = dayIndex(READINGS.length);
 loadState();
 if (!S.storageOk) showStatus("This browser isn't saving your progress (private mode?). Open it in normal Safari or Chrome.", "bad");
-renderToday(); renderReading(); loadOrder(dayIndex(ORDERS.length)); renderProgress(); fillSettings(); route();
+renderToday(); renderReading(); buildOrderPool(); renderOrder(); renderProgress(); fillSettings(); route();
 if (!LOCAL.lastSync && (Object.keys(LOCAL.p||{}).length || Object.keys(LOCAL.logs||{}).length)) LOCAL.dirty = true;
 saveLocal(); renderSync(); if (LOCAL.dirty) setTimeout(syncNow, 3000);
 
